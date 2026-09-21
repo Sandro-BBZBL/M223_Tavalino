@@ -1,9 +1,7 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+zurich:
+  name: Tavolino Zürich
+  address: Bahnhofstrasse 1, 8001 Zürich
 
-one:
-  name: MyString
-  address: MyString
-
-two:
-  name: MyString
-  address: MyString
+luzern:
+  name: Tavolino Luzern
+  address: Pilatusstrasse 5, 6003 Luzern

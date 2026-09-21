@@ -1,13 +1,23 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  location: one
+zurich_1:
+  location: zurich
   number: 1
-  capacity: 1
+  capacity: 4
+  active: true
+
+zurich_2:
+  location: zurich
+  number: 2
+  capacity: 2
+  active: true
+
+zurich_inactive:
+  location: zurich
+  number: 3
+  capacity: 4
   active: false
 
-two:
-  location: two
+luzern_1:
+  location: luzern
   number: 1
-  capacity: 1
-  active: false
+  capacity: 6
+  active: true

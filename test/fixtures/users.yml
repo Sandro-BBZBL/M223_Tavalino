@@ -1,13 +1,13 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+<% password_digest = BCrypt::Password.create("password12345", cost: 4) %>
 
-one:
-  name: MyString
-  email_address: MyString
-  password_digest: MyString
-  role: MyString
+admin:
+  name: Fixture Admin
+  email_address: fixture-admin@tavolino.test
+  password_digest: <%= password_digest %>
+  role: admin
 
-two:
-  name: MyString
-  email_address: MyString
-  password_digest: MyString
-  role: MyString
+staff:
+  name: Fixture Mitarbeiter
+  email_address: fixture-staff@tavolino.test
+  password_digest: <%= password_digest %>
+  role: staff

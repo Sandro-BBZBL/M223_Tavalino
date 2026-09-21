@@ -34,4 +34,23 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_users_path
     assert @staff.reload.admin?
   end
+
+  test "admin can assign locations to a user" do
+    post user_sessions_path, params: { user: { email_address: @admin.email_address, password: "password12345" } }
+    zurich = locations(:zurich)
+
+    patch admin_user_path(@staff), params: { user: { name: @staff.name, email_address: @staff.email_address, role: "staff", location_ids: [ "", zurich.id.to_s ] } }
+
+    assert_redirected_to admin_users_path
+    assert_equal [ zurich ], @staff.reload.locations.to_a
+  end
+
+  test "admin cannot remove their own admin role" do
+    post user_sessions_path, params: { user: { email_address: @admin.email_address, password: "password12345" } }
+
+    patch admin_user_path(@admin), params: { user: { name: @admin.name, email_address: @admin.email_address, role: "staff" } }
+
+    assert_response :unprocessable_entity
+    assert @admin.reload.admin?
+  end
 end

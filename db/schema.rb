@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_084139) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_100000) do
   create_table "dining_tables", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.integer "capacity", null: false
@@ -39,16 +39,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_084139) do
     t.string "guest_email"
     t.string "guest_name"
     t.string "guest_phone"
-    t.datetime "locked_until"
+    t.integer "lock_version", default: 0, null: false
     t.integer "party_size", null: false
     t.datetime "starts_at", null: false
-    t.string "status", default: "pending", null: false
+    t.string "status", default: "confirmed", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.index ["confirmation_code"], name: "index_reservations_on_confirmation_code", unique: true
     t.index ["dining_table_id", "starts_at", "ends_at"], name: "idx_on_dining_table_id_starts_at_ends_at_1f8a494048"
     t.index ["dining_table_id"], name: "index_reservations_on_dining_table_id"
-    t.index ["locked_until"], name: "index_reservations_on_locked_until"
     t.index ["user_id"], name: "index_reservations_on_user_id"
   end
 

@@ -12,21 +12,32 @@
 
 <%= form_with model: [:admin, @user], local: true do |form| %>
   <div>
-    <%= form.label :name %>
+    <%= form.label :name, "Name" %><br>
     <%= form.text_field :name %>
   </div>
 
   <div>
-    <%= form.label :email_address %>
+    <%= form.label :email_address, "E-Mail" %><br>
     <%= form.email_field :email_address %>
   </div>
 
   <div>
-    <%= form.label :role %>
-    <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] } %>
+    <%= form.label :role, "Rolle" %><br>
+    <%= form.select :role, [["Mitarbeiter", "staff"], ["Admin", "admin"]] %>
   </div>
 
-  <%= form.submit "Speichern" %>
+  <fieldset>
+    <legend>Standorte</legend>
+    <% if @locations.any? %>
+      <%= form.collection_check_boxes :location_ids, @locations, :id, :name do |box| %>
+        <div><%= box.check_box %> <%= box.label %></div>
+      <% end %>
+    <% else %>
+      <p>Es sind noch keine Standorte erfasst.</p>
+    <% end %>
+  </fieldset>
+
+  <p><%= form.submit "Speichern" %></p>
 <% end %>
 
 <%= link_to "Zurück zur Übersicht", admin_users_path %>

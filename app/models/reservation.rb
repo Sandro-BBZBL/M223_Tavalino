@@ -1,6 +1,5 @@
 class Reservation < ApplicationRecord
   DEFAULT_DURATION_MINUTES = 120
-  LOCK_DURATION = 5.minutes
 
   belongs_to :user, optional: true   # erfassender Mitarbeiter (nur bei manueller Erfassung)
   belongs_to :dining_table
@@ -8,8 +7,10 @@ class Reservation < ApplicationRecord
 
   has_secure_token :confirmation_code
 
-  enum :status, { pending: "pending", confirmed: "confirmed", cancelled: "cancelled" },
-       default: :pending, validate: true
+  # Optimistic Locking: Rails nutzt die Spalte lock_version automatisch und wirft
+  # ActiveRecord::StaleObjectError, wenn jemand anderes zuerst gespeichert hat.
+  enum :status, { confirmed: "confirmed", cancelled: "cancelled" },
+       default: :confirmed, validate: true
 
   normalizes :guest_email, with: ->(email) { email.strip.downcase }
 
@@ -22,13 +23,9 @@ class Reservation < ApplicationRecord
   validate :starts_at_in_future, on: :create
   validate :party_size_fits_table
 
-  # Kontaktdaten sind erst beim Abschluss Pflicht: Die Sperre startet schon
-  # bei der Tischwahl, bevor der Gast seine Daten eingegeben hat.
-  with_options unless: :pending? do
-    validates :guest_name, presence: true
-    validates :guest_email, presence: true,
-                            format: { with: URI::MailTo::EMAIL_REGEXP }
-  end
+  validates :guest_name, presence: true
+  validates :guest_email, presence: true,
+                          format: { with: URI::MailTo::EMAIL_REGEXP }
 
   private
 
