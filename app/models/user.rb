@@ -23,6 +23,10 @@ class User < ApplicationRecord
   validates :unconfirmed_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_nil: true
   validate :unconfirmed_email_available
 
+  def admin?
+    role == "admin"
+  end
+
   # Bereitet die E-Mail-Änderung vor (speichert nicht)
   def stage_email_change(new_email)
     assign_attributes(

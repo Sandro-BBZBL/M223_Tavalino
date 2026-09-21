@@ -28,6 +28,9 @@
       <%= link_to "Start", root_path %>
       <% if current_user %>
         <%= link_to "Dashboard", admin_dashboard_path %>
+        <% if current_user.admin? %>
+          <%= link_to "Benutzer", admin_users_path %>
+        <% end %>
         <%= link_to "Profil", profile_path %>
         <%= link_to "Abmelden", user_session_path(current_user), data: { turbo_method: :delete } %>
       <% else %>

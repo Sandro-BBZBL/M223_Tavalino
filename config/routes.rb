@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboards#show", as: :dashboard
+    resources :users, only: %i[index edit update]
   end
 
   resource :profile, only: %i[show edit update]
