@@ -1,0 +1,30 @@
+<h1>Profil bearbeiten</h1>
+
+<% if @user.errors.any? %>
+  <ul>
+    <% @user.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<h2>Name</h2>
+<%= form_with model: @user, url: profile_path, method: :patch do |f| %>
+  <div>
+    <%= f.label :name, "Name" %><br>
+    <%= f.text_field :name %>
+  </div>
+  <p><%= f.submit "Speichern" %></p>
+<% end %>
+
+<h2>E-Mail-Adresse ändern</h2>
+<p>Aktuell: <%= @user.email_address %></p>
+<%= form_with url: email_change_path do |f| %>
+  <div>
+    <%= f.label :new_email, "Neue E-Mail-Adresse" %><br>
+    <%= f.email_field :new_email %>
+  </div>
+  <p><%= f.submit "Bestätigungslink senden" %></p>
+<% end %>
+
+<p><%= link_to "Zurück zum Profil", profile_path %></p>

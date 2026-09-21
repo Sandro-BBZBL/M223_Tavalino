@@ -1,0 +1,27 @@
+<h1>Passwort ändern</h1>
+
+<% if @user.errors.any? %>
+  <ul>
+    <% @user.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= form_with model: @user, url: password_path, method: :patch do |f| %>
+  <div>
+    <%= f.label :current_password, "Aktuelles Passwort" %><br>
+    <%= f.password_field :current_password, autocomplete: "current-password" %>
+  </div>
+  <div>
+    <%= f.label :password, "Neues Passwort (mindestens 12 Zeichen)" %><br>
+    <%= f.password_field :password, autocomplete: "new-password" %>
+  </div>
+  <div>
+    <%= f.label :password_confirmation, "Neues Passwort bestätigen" %><br>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  </div>
+  <p><%= f.submit "Passwort ändern" %></p>
+<% end %>
+
+<p><%= link_to "Zurück zum Profil", profile_path %></p>
