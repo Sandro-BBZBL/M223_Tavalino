@@ -1,0 +1,7 @@
+<% if current_user %>
+  <h1>Willkommen, <%= current_user.name %></h1>
+  <p><%= link_to "Zum Dashboard", admin_dashboard_path %></p>
+<% else %>
+  <h1>Tavolino-Tischreservation</h1>
+  <p>Bitte melde dich an oder registriere dich.</p>
+<% end %>

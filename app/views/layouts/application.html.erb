@@ -24,6 +24,21 @@
   </head>
 
   <body>
+    <nav>
+      <%= link_to "Start", root_path %>
+      <% if current_user %>
+        <%= link_to "Dashboard", admin_dashboard_path %>
+        <%= link_to "Abmelden", user_session_path(current_user), data: { turbo_method: :delete } %>
+      <% else %>
+        <%= link_to "Anmelden", new_user_session_path %>
+        <%= link_to "Registrieren", new_user_path %>
+      <% end %>
+    </nav>
+
+    <% flash.each do |type, msg| %>
+      <div><%= msg %></div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

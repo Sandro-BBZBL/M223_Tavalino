@@ -1,0 +1,31 @@
+<h1>Registrieren</h1>
+
+<%= form_with model: @user do |f| %>
+  <% if @user.errors.any? %>
+    <div>
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, "Name" %><br>
+    <%= f.text_field :name %>
+  </div>
+  <div>
+    <%= f.label :email_address, "E-Mail" %><br>
+    <%= f.email_field :email_address %>
+  </div>
+  <div>
+    <%= f.label :password, "Passwort (mindestens 12 Zeichen)" %><br>
+    <%= f.password_field :password %>
+  </div>
+  <div>
+    <%= f.label :password_confirmation, "Passwort bestätigen" %><br>
+    <%= f.password_field :password_confirmation %>
+  </div>
+  <p><%= f.submit "Registrieren" %></p>
+<% end %>

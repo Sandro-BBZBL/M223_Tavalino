@@ -1,0 +1,13 @@
+<h1>Anmelden</h1>
+
+<%= form_with model: @user, url: user_sessions_path do |f| %>
+  <div>
+    <%= f.label :email_address, "E-Mail" %><br>
+    <%= f.email_field :email_address %>
+  </div>
+  <div>
+    <%= f.label :password, "Passwort" %><br>
+    <%= f.password_field :password %>
+  </div>
+  <p><%= f.submit "Anmelden" %></p>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_064212) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_082234) do
   create_table "dining_tables", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.integer "capacity", null: false
@@ -31,16 +31,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_064212) do
   end
 
   create_table "reservations", force: :cascade do |t|
+    t.string "confirmation_code"
     t.datetime "created_at", null: false
     t.integer "dining_table_id", null: false
     t.integer "duration_minutes", default: 120, null: false
     t.datetime "ends_at", null: false
+    t.string "guest_email"
+    t.string "guest_name"
+    t.string "guest_phone"
     t.datetime "locked_until"
     t.integer "party_size", null: false
     t.datetime "starts_at", null: false
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
+    t.index ["confirmation_code"], name: "index_reservations_on_confirmation_code", unique: true
     t.index ["dining_table_id", "starts_at", "ends_at"], name: "idx_on_dining_table_id_starts_at_ends_at_1f8a494048"
     t.index ["dining_table_id"], name: "index_reservations_on_dining_table_id"
     t.index ["locked_until"], name: "index_reservations_on_locked_until"
@@ -62,7 +67,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_064212) do
     t.string "email_address", null: false
     t.string "name", null: false
     t.string "password_digest", null: false
-    t.string "role", default: "guest", null: false
+    t.string "role", default: "staff", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
