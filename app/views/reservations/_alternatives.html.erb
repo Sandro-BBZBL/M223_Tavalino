@@ -1,0 +1,16 @@
+<% if alternatives.present? %>
+  <div data-alternatives>
+    <h3>Alternativvorschläge</h3>
+    <ul>
+      <% alternatives.each do |alt| %>
+        <li>
+          <%= link_to "#{alt.location.name}, #{alt.starts_at.strftime('%d.%m.%Y, %H:%M')} Uhr " \
+                      "(Tisch #{alt.dining_table.number}, #{alt.dining_table.capacity} Plätze)",
+                      new_reservation_path(dining_table_id: alt.dining_table.id,
+                                           starts_at: alt.starts_at.iso8601,
+                                           party_size: party_size) %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

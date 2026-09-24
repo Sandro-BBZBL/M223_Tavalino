@@ -1,0 +1,57 @@
+<h1><%= @location.name %></h1>
+<p><%= @location.address %></p>
+
+<h2>Freien Tisch suchen</h2>
+
+<% if @search.errors.any? %>
+  <div role="alert">
+    <ul>
+      <% @search.errors.each do |error| %>
+        <li><%= error.message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @search, scope: :search, url: location_path(@location), method: :get do |f| %>
+  <div>
+    <%= f.label :date, "Datum" %><br>
+    <%= f.date_field :date, min: Date.current.iso8601 %>
+  </div>
+  <div>
+    <%= f.label :time, "Uhrzeit" %><br>
+    <%= f.select :time, ReservationSearch::TIME_SLOTS %>
+  </div>
+  <div>
+    <%= f.label :party_size, "Personenzahl" %><br>
+    <%= f.number_field :party_size, min: 1, max: ReservationSearch::MAX_PARTY_SIZE %>
+  </div>
+  <p><%= f.submit "Freie Tische suchen", name: nil %></p>
+<% end %>
+
+<% if @tables %>
+  <h2>Ergebnis</h2>
+  <% if @tables.any? %>
+    <p>
+      Freie Tische am <%= @search.starts_at.strftime("%d.%m.%Y") %> um
+      <%= @search.starts_at.strftime("%H:%M") %> Uhr für <%= @search.party_size %> Person(en):
+    </p>
+    <ul>
+      <% @tables.each do |table| %>
+        <li data-table-id="<%= table.id %>">
+          Tisch <%= table.number %> (<%= table.capacity %> Plätze)
+          –
+          <%= link_to "Reservieren",
+                      new_reservation_path(dining_table_id: table.id,
+                                           starts_at: @search.starts_at.iso8601,
+                                           party_size: @search.party_size) %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>Zu dieser Zeit ist leider kein passender Tisch mehr frei.</p>
+    <%= render "reservations/alternatives", alternatives: @alternatives, party_size: @search.party_size %>
+  <% end %>
+<% end %>
+
+<p><%= link_to "Zurück zur Standortwahl", root_path %></p>

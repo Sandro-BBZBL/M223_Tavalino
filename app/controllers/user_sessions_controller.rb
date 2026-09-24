@@ -13,7 +13,7 @@ class UserSessionsController < ApplicationController
     if user
       reset_session
       session[:user_id] = user.id
-      redirect_to root_path, notice: "Erfolgreich angemeldet."
+      redirect_to staff_reservations_path, notice: "Erfolgreich angemeldet."
     else
       flash[:alert] = "E-Mail oder Passwort ist falsch."
       redirect_to new_user_session_path

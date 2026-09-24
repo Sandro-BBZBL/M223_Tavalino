@@ -20,4 +20,14 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     redirect_to root_path, alert: "keine Berechtigung"
   end
+
+  # Gäste haben kein Konto. Wer eine Reservation gebucht oder mit Code und
+  # E-Mail abgerufen hat, ist für diese Reservation in seiner Session "bekannt".
+  def remember_reservation(reservation)
+    session[:known_reservation_ids] = (Array(session[:known_reservation_ids]) + [ reservation.id ]).uniq
+  end
+
+  def reservation_known?(reservation)
+    Array(session[:known_reservation_ids]).include?(reservation.id)
+  end
 end

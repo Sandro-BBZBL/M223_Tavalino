@@ -1,0 +1,45 @@
+<h1>Reservation abschliessen</h1>
+
+<p>
+  <strong><%= @dining_table.location.name %></strong>,
+  Tisch <%= @dining_table.number %> (<%= @dining_table.capacity %> Plätze)<br>
+  <% if @reservation.starts_at %>
+    <%= @reservation.starts_at.strftime("%d.%m.%Y, %H:%M") %> Uhr,
+    <%= @reservation.duration_minutes %> Minuten,
+  <% end %>
+  <%= @reservation.party_size %> Person(en)
+</p>
+
+<% if @reservation.errors.any? %>
+  <div role="alert">
+    <ul>
+      <% @reservation.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= render "reservations/alternatives", alternatives: @alternatives, party_size: @reservation.party_size %>
+
+<%= form_with model: @reservation, url: reservations_path do |f| %>
+  <%= f.hidden_field :dining_table_id, value: @dining_table.id %>
+  <%= f.hidden_field :starts_at, value: @reservation.starts_at&.iso8601 %>
+  <%= f.hidden_field :party_size %>
+
+  <div>
+    <%= f.label :guest_name, "Name" %><br>
+    <%= f.text_field :guest_name %>
+  </div>
+  <div>
+    <%= f.label :guest_email, "E-Mail" %><br>
+    <%= f.email_field :guest_email %>
+  </div>
+  <div>
+    <%= f.label :guest_phone, "Telefon (optional)" %><br>
+    <%= f.telephone_field :guest_phone %>
+  </div>
+  <p><%= f.submit "Verbindlich reservieren" %></p>
+<% end %>
+
+<p><%= link_to "Zurück zur Suche", location_path(@dining_table.location) %></p>

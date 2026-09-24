@@ -27,8 +27,9 @@
     <nav>
       <%= link_to "Start", root_path %>
       <% if current_user %>
-        <%= link_to "Dashboard", admin_dashboard_path %>
-        <% if current_user.admin? %>
+        <%= link_to "Reservationen", staff_reservations_path %>
+        <% if policy(:admin).access? %>
+          <%= link_to "Dashboard", admin_dashboard_path %>
           <%= link_to "Benutzer", admin_users_path %>
         <% end %>
         <%= link_to "Profil", profile_path %>

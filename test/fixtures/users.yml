@@ -11,3 +11,15 @@ staff:
   email_address: fixture-staff@tavolino.test
   password_digest: <%= password_digest %>
   role: staff
+
+staff_luzern:
+  name: Fixture Mitarbeiter Luzern
+  email_address: fixture-staff-luzern@tavolino.test
+  password_digest: <%= password_digest %>
+  role: staff
+
+staff_unassigned:
+  name: Fixture Mitarbeiter ohne Standort
+  email_address: fixture-staff-unassigned@tavolino.test
+  password_digest: <%= password_digest %>
+  role: staff

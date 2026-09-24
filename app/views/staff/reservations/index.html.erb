@@ -1,0 +1,62 @@
+<h1>Reservationen</h1>
+
+<% if @locations.empty? %>
+  <p data-no-location>
+    Dir ist noch kein Standort zugewiesen. Bitte wende dich an einen Admin,
+    damit du Reservationen sehen kannst.
+  </p>
+<% else %>
+  <%= form_with url: staff_reservations_path, method: :get do |f| %>
+    <div>
+      <%= f.label :location_id, "Standort" %><br>
+      <%= f.select :location_id,
+                   options_from_collection_for_select(@locations, :id, :name, params[:location_id]),
+                   include_blank: "Alle Standorte" %>
+    </div>
+    <div>
+      <%= f.label :date, "Datum" %><br>
+      <%= f.date_field :date, value: params[:date] %>
+    </div>
+    <p>
+      <%= f.submit "Filtern", name: nil %>
+      <%= link_to "Zurücksetzen", staff_reservations_path %>
+    </p>
+  <% end %>
+
+  <% if params[:date].blank? %>
+    <p>Angezeigt werden alle Reservationen ab heute. Für einen bestimmten Tag ein Datum wählen.</p>
+  <% end %>
+
+  <% if @reservations.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Zeit</th>
+          <th>Standort</th>
+          <th>Tisch</th>
+          <th>Personen</th>
+          <th>Gast</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @reservations.each do |reservation| %>
+          <tr data-reservation-id="<%= reservation.id %>">
+            <td><%= reservation.starts_at.strftime("%d.%m.%Y") %></td>
+            <td><%= reservation.starts_at.strftime("%H:%M") %>–<%= reservation.ends_at.strftime("%H:%M") %></td>
+            <td><%= reservation.dining_table.location.name %></td>
+            <td><%= reservation.dining_table.number %></td>
+            <td><%= reservation.party_size %></td>
+            <td><%= reservation.guest_name %></td>
+            <td><%= reservation.confirmed? ? "bestätigt" : "storniert" %></td>
+            <td><%= link_to "Details", staff_reservation_path(reservation) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>Keine Reservationen gefunden.</p>
+  <% end %>
+<% end %>

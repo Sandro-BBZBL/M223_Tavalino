@@ -1,0 +1,17 @@
+<h1>Reservation abrufen</h1>
+
+<p>Gib deinen Reservationscode und die E-Mail-Adresse ein, mit der du reserviert hast.</p>
+
+<%= form_with scope: :lookup, url: reservation_lookup_path do |f| %>
+  <div>
+    <%= f.label :confirmation_code, "Reservationscode" %><br>
+    <%= f.text_field :confirmation_code, value: @confirmation_code, autocomplete: "off" %>
+  </div>
+  <div>
+    <%= f.label :email, "E-Mail-Adresse" %><br>
+    <%= f.email_field :email %>
+  </div>
+  <p><%= f.submit "Reservation abrufen" %></p>
+<% end %>
+
+<p><%= link_to "Zur Startseite", root_path %></p>

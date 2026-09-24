@@ -1,7 +1,20 @@
+<h1>Tavolino-Tischreservation</h1>
+<p>Reserviere jederzeit online einen Tisch – ganz ohne Konto.</p>
+
+<h2>Standort wählen</h2>
+<ul>
+  <% @locations.each do |location| %>
+    <li>
+      <%= link_to location.name, location_path(location) %><br>
+      <%= location.address %>
+    </li>
+  <% end %>
+</ul>
+
+<p>Schon reserviert? <%= link_to "Reservation abrufen oder stornieren", new_reservation_lookup_path %></p>
+
 <% if current_user %>
-  <h1>Willkommen, <%= current_user.name %></h1>
-  <p><%= link_to "Zum Dashboard", admin_dashboard_path %></p>
+  <p>Angemeldet als <%= current_user.name %>. <%= link_to "Zu den Reservationen", staff_reservations_path %></p>
 <% else %>
-  <h1>Tavolino-Tischreservation</h1>
-  <p>Bitte melde dich an oder registriere dich.</p>
+  <p>Mitarbeiter: <%= link_to "Anmelden", new_user_session_path %></p>
 <% end %>

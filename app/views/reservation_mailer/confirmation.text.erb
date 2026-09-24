@@ -1,0 +1,14 @@
+Hallo <%= @reservation.guest_name %>
+
+Deine Reservation ist bestätigt.
+
+Standort: <%= @reservation.dining_table.location.name %>, <%= @reservation.dining_table.location.address %>
+Datum:    <%= @reservation.starts_at.strftime("%d.%m.%Y") %>
+Zeit:     <%= @reservation.starts_at.strftime("%H:%M") %> bis <%= (@reservation.starts_at + @reservation.duration_minutes.minutes).strftime("%H:%M") %> Uhr
+Personen: <%= @reservation.party_size %>
+Tisch:    <%= @reservation.dining_table.number %>
+
+Dein Reservationscode: <%= @reservation.confirmation_code %>
+
+Reservation ansehen oder stornieren (mit Code und deiner E-Mail-Adresse, Stornierung bis 2 Stunden vor dem Termin):
+<%= @lookup_url %>

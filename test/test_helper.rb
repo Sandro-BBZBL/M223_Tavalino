@@ -13,3 +13,12 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+module ActionDispatch
+  class IntegrationTest
+    # Meldet einen Fixture-Benutzer über den echten Login an (alle Fixture-Passwörter: password12345)
+    def sign_in_as(user, password: "password12345")
+      post user_sessions_path, params: { user: { email_address: user.email_address, password: password } }
+    end
+  end
+end

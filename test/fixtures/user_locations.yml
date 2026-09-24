@@ -1,3 +1,7 @@
 staff_zurich:
   user: staff
   location: zurich
+
+staff_luzern:
+  user: staff_luzern
+  location: luzern

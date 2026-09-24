@@ -1,0 +1,27 @@
+# Deutsche Feldnamen und Standard-Fehlermeldungen (App-Sprache bleibt :en,
+# die Texte werden hier überschrieben).
+en:
+  activerecord:
+    attributes:
+      reservation:
+        guest_name: Name
+        guest_email: E-Mail
+        guest_phone: Telefon
+        starts_at: Zeitpunkt
+        party_size: Personenzahl
+        dining_table: Tisch
+      user:
+        name: Name
+        email_address: E-Mail
+        password: Passwort
+        password_confirmation: Passwort-Bestätigung
+  errors:
+    messages:
+      blank: darf nicht leer sein
+      invalid: ist ungültig
+      required: muss angegeben werden
+      not_a_number: ist keine Zahl
+      greater_than: muss grösser als %{count} sein
+      too_short: ist zu kurz (mindestens %{count} Zeichen)
+      taken: ist bereits vergeben
+      confirmation: stimmt nicht überein
