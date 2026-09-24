@@ -28,6 +28,7 @@
       <%= link_to "Start", root_path %>
       <% if current_user %>
         <%= link_to "Reservationen", staff_reservations_path %>
+        <%= link_to "Aktivitäten", staff_activities_path %>
         <% if policy(:admin).access? %>
           <%= link_to "Dashboard", admin_dashboard_path %>
           <%= link_to "Benutzer", admin_users_path %>

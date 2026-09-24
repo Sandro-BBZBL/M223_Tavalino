@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   # Mitarbeiter und Admins (Anmeldung nötig)
   namespace :staff do
+    resources :activities, only: :index
     resources :reservations, only: %i[index show new create edit update] do
       resource :cancellation, only: :create
     end

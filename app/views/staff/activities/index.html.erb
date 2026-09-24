@@ -1,0 +1,43 @@
+<h1>Aktivitäten</h1>
+
+<p>Die neusten Änderungen an Reservationen (höchstens <%= @limit %> Einträge, neueste zuerst).</p>
+
+<% if @entries.empty? %>
+  <p>Noch keine Aktivitäten.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>Zeit</th>
+        <th>Wer</th>
+        <th>Was</th>
+        <th>Reservation</th>
+        <th>Änderungen</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @entries.each do |entry| %>
+        <tr data-version-id="<%= entry.id %>" data-reservation-id="<%= entry.reservation_id %>">
+          <td><%= entry.time.strftime("%d.%m.%Y, %H:%M") %></td>
+          <td><%= entry.actor %></td>
+          <td><%= entry.action %></td>
+          <td>
+            <% if entry.reservation %>
+              <%= link_to "#{entry.reservation.guest_name} – #{entry.reservation.starts_at.strftime('%d.%m.%Y, %H:%M')}",
+                          staff_reservation_path(entry.reservation) %>
+            <% else %>
+              Reservation #<%= entry.reservation_id %>
+            <% end %>
+          </td>
+          <td>
+            <ul>
+              <% entry.changes.each do |line| %>
+                <li><%= line %></li>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
