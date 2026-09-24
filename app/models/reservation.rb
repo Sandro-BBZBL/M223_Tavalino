@@ -61,7 +61,7 @@ class Reservation < ApplicationRecord
   # Tisch nacheinander laufen. Gibt true/false zurück (Fehler stehen in #errors).
   def book
     transaction do
-      dining_table.lock!
+      dining_table&.lock!
       save
     end
   end

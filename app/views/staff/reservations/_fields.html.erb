@@ -1,0 +1,28 @@
+<%# Gemeinsame Felder für Erfassen und Bearbeiten. Locals: f (Form-Builder), tables %>
+<div>
+  <%= f.label :starts_at, "Datum und Uhrzeit" %><br>
+  <%= f.datetime_local_field :starts_at, value: f.object.starts_at&.strftime("%Y-%m-%dT%H:%M") %>
+  (Dauer: <%= f.object.duration_minutes || Reservation::DEFAULT_DURATION_MINUTES %> Minuten)
+</div>
+<div>
+  <%= f.label :dining_table_id, "Tisch" %><br>
+  <%= f.select :dining_table_id,
+               tables.map { |table| [ "#{table.location.name} – Tisch #{table.number} (#{table.capacity} Plätze)", table.id ] },
+               prompt: "Bitte Tisch wählen" %>
+</div>
+<div>
+  <%= f.label :party_size, "Personenzahl" %><br>
+  <%= f.number_field :party_size, min: 1 %>
+</div>
+<div>
+  <%= f.label :guest_name, "Name des Gastes" %><br>
+  <%= f.text_field :guest_name %>
+</div>
+<div>
+  <%= f.label :guest_email, "E-Mail" %><br>
+  <%= f.email_field :guest_email %>
+</div>
+<div>
+  <%= f.label :guest_phone, "Telefon" %><br>
+  <%= f.telephone_field :guest_phone %>
+</div>

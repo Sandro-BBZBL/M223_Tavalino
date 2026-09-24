@@ -67,4 +67,12 @@ class ReservationSearchTest < ActiveSupport::TestCase
 
     assert alternatives.all? { |alt| alt.starts_at > Time.current }
   end
+
+  test "alternatives at other locations respect the allowed locations" do
+    alternatives = ReservationSearch.alternatives_for(location: @zurich, starts_at: @dinner.starts_at, party_size: 2,
+                                                      locations: Location.where(id: @zurich.id))
+
+    assert alternatives.any?
+    assert alternatives.none? { |alt| alt.location == @luzern }
+  end
 end

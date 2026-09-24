@@ -9,6 +9,16 @@ class ReservationPolicy < ApplicationPolicy
     manages_location?
   end
 
+  # Manuell erfassen: Das leere Formular (noch ohne Tisch) dürfen alle Angemeldeten
+  # öffnen. Sobald ein Tisch gewählt ist, muss er zu einem eigenen Standort gehören.
+  # new? läuft über create? (siehe ApplicationPolicy)
+  def create?
+    return false if user.blank?
+    return true unless record.respond_to?(:dining_table) && record.dining_table
+
+    manages_location?
+  end
+
   # edit? läuft über update? (siehe ApplicationPolicy)
   def update?
     manages_location?

@@ -1,0 +1,26 @@
+<h1>Reservation erfassen</h1>
+
+<p><%= link_to "Zurück zur Übersicht", staff_reservations_path %></p>
+
+<% if @tables.empty? %>
+  <p data-no-location>
+    Dir ist noch kein Standort mit aktiven Tischen zugewiesen. Bitte wende dich an einen Admin.
+  </p>
+<% else %>
+  <% if @reservation.errors.any? %>
+    <div role="alert">
+      <ul>
+        <% @reservation.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= render "reservations/alternatives", alternatives: @alternatives, party_size: @reservation.party_size, staff: true %>
+
+  <%= form_with model: @reservation, url: staff_reservations_path do |f| %>
+    <%= render "fields", f: f, tables: @tables %>
+    <p><%= f.submit "Reservation erfassen" %></p>
+  <% end %>
+<% end %>

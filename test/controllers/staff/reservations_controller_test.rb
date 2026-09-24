@@ -356,4 +356,205 @@ class Staff::ReservationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", edit_staff_reservation_path(@zurich_reservation), count: 0
     assert_select "form[action=?]", staff_reservation_cancellation_path(@zurich_reservation), count: 0
   end
+
+  # --- Manuell erfassen ---------------------------------------------------------
+
+  def create_params(overrides = {})
+    { reservation: {
+      dining_table_id: dining_tables(:zurich_2).id,
+      starts_at: (@zurich_reservation.starts_at + 1.day).strftime("%Y-%m-%dT%H:%M"),
+      party_size: 2,
+      guest_name: "Peter Telefon",
+      guest_email: "peter@example.com",
+      guest_phone: "079 555 55 55"
+    }.merge(overrides) }
+  end
+
+  test "visitors cannot open the form or create reservations" do
+    get new_staff_reservation_path
+    assert_redirected_to new_user_session_path
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path, params: create_params
+    end
+    assert_redirected_to new_user_session_path
+  end
+
+  test "overview links to the form only for staff with a location" do
+    sign_in_as users(:staff)
+    get staff_reservations_path
+    assert_select "a[href=?]", new_staff_reservation_path
+
+    delete user_session_path(users(:staff))
+    sign_in_as users(:staff_unassigned)
+    get staff_reservations_path
+    assert_select "a[href=?]", new_staff_reservation_path, count: 0
+  end
+
+  test "staff sees the form with only own active tables" do
+    sign_in_as users(:staff)
+
+    get new_staff_reservation_path
+
+    assert_response :success
+    assert_select "form input[name='reservation[guest_name]']"
+    assert_select "option[value='#{dining_tables(:zurich_2).id}']"
+    assert_select "option[value='#{dining_tables(:luzern_1).id}']", count: 0
+    assert_select "option[value='#{dining_tables(:zurich_inactive).id}']", count: 0
+  end
+
+  test "form can be prefilled from an alternative suggestion" do
+    sign_in_as users(:staff)
+
+    get new_staff_reservation_path(dining_table_id: dining_tables(:zurich_2).id,
+                                   starts_at: @zurich_reservation.starts_at.iso8601, party_size: 2)
+
+    assert_response :success
+    assert_select "option[selected][value='#{dining_tables(:zurich_2).id}']"
+    assert_select "input[name='reservation[party_size]'][value='2']"
+  end
+
+  test "prefilling the form with a foreign table is rejected" do
+    sign_in_as users(:staff)
+
+    get new_staff_reservation_path(dining_table_id: dining_tables(:luzern_1).id)
+
+    assert_response :not_found
+  end
+
+  test "staff without a location sees a hint instead of the form" do
+    sign_in_as users(:staff_unassigned)
+
+    get new_staff_reservation_path
+
+    assert_response :success
+    assert_match "kein Standort", response.body
+    assert_select "form input[name='reservation[guest_name]']", count: 0
+  end
+
+  test "staff records a reservation and is stored as recorder" do
+    sign_in_as users(:staff)
+
+    assert_difference "Reservation.count", 1 do
+      post staff_reservations_path, params: create_params
+    end
+
+    reservation = Reservation.find_by!(guest_email: "peter@example.com")
+    assert_redirected_to staff_reservation_path(reservation)
+    assert reservation.confirmed?
+    assert_equal users(:staff), reservation.user
+    assert reservation.confirmation_code.present?
+
+    follow_redirect!
+    assert_match "Fixture Mitarbeiter", response.body   # "Erfasst durch"
+  end
+
+  test "recording sends a confirmation mail to the guest" do
+    sign_in_as users(:staff)
+
+    assert_enqueued_emails 1 do
+      post staff_reservations_path, params: create_params
+    end
+  end
+
+  test "admin can record a reservation at any location" do
+    sign_in_as users(:admin)
+
+    assert_difference "Reservation.count", 1 do
+      post staff_reservations_path, params: create_params(dining_table_id: dining_tables(:luzern_1).id)
+    end
+
+    assert_equal users(:admin), Reservation.find_by!(guest_email: "peter@example.com").user
+  end
+
+  test "recording on an occupied slot is rejected with alternatives at own locations only" do
+    sign_in_as users(:staff)
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path,
+           params: create_params(dining_table_id: dining_tables(:zurich_1).id,
+                                 starts_at: @zurich_reservation.starts_at.strftime("%Y-%m-%dT%H:%M"))
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role=alert]", /bereits vergeben/
+    assert_select "[data-alternatives] a[href^=?]", new_staff_reservation_path
+    assert_select "[data-alternatives] a", text: /#{Regexp.escape(locations(:luzern).name)}/, count: 0
+  end
+
+  test "admin gets alternatives at other locations too" do
+    sign_in_as users(:admin)
+
+    post staff_reservations_path,
+         params: create_params(dining_table_id: dining_tables(:zurich_1).id,
+                               starts_at: @zurich_reservation.starts_at.strftime("%Y-%m-%dT%H:%M"))
+
+    assert_response :unprocessable_entity
+    assert_select "[data-alternatives] a", text: /#{Regexp.escape(locations(:luzern).name)}/
+  end
+
+  test "recording on a table of a foreign location is rejected" do
+    sign_in_as users(:staff)
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path, params: create_params(dining_table_id: dining_tables(:luzern_1).id)
+    end
+
+    assert_response :not_found
+  end
+
+  test "recording without choosing a table shows a validation error" do
+    sign_in_as users(:staff)
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path, params: create_params(dining_table_id: "")
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role=alert]", /Tisch/
+  end
+
+  test "recording with invalid guest data is rejected" do
+    sign_in_as users(:staff)
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path, params: create_params(guest_name: "", guest_email: "kaputt")
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role=alert]"
+  end
+
+  test "recording in the past is rejected" do
+    sign_in_as users(:staff)
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path,
+           params: create_params(starts_at: 1.day.ago.strftime("%Y-%m-%dT%H:%M"))
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role=alert]", /Zukunft/
+  end
+
+  test "recording more guests than the table seats is rejected" do
+    sign_in_as users(:staff)
+
+    assert_no_difference "Reservation.count" do
+      post staff_reservations_path, params: create_params(party_size: 3) # zurich_2 hat 2 Plätze
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role=alert]", /Kapazität/
+  end
+
+  test "a recorded reservation blocks the table for guests" do
+    sign_in_as users(:staff)
+    post staff_reservations_path, params: create_params
+    reservation = Reservation.find_by!(guest_email: "peter@example.com")
+
+    tables = DiningTable.available_for(location: locations(:zurich), starts_at: reservation.starts_at, party_size: 2)
+
+    assert_not_includes tables, dining_tables(:zurich_2)
+  end
 end

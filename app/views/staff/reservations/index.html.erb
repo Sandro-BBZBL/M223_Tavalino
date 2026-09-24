@@ -6,6 +6,8 @@
     damit du Reservationen sehen kannst.
   </p>
 <% else %>
+  <p><%= link_to "Reservation erfassen", new_staff_reservation_path %></p>
+
   <%= form_with url: staff_reservations_path, method: :get do |f| %>
     <div>
       <%= f.label :location_id, "Standort" %><br>

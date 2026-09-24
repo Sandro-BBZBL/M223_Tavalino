@@ -43,7 +43,7 @@ class ReservationSearch
 
   # Nächstliegende freie Zeiten am selben Standort, danach derselbe Zeitpunkt
   # an den anderen Standorten.
-  def self.alternatives_for(location:, starts_at:, party_size:, limit: 3)
+  def self.alternatives_for(location:, starts_at:, party_size:, limit: 3, locations: Location.all)
     same_location = []
     ALTERNATIVE_OFFSETS.each do |offset|
       time = starts_at + offset.minutes
@@ -54,7 +54,7 @@ class ReservationSearch
       break if same_location.size >= limit
     end
 
-    other_locations = Location.where.not(id: location.id).order(:name).filter_map do |other|
+    other_locations = locations.where.not(id: location.id).order(:name).filter_map do |other|
       table = DiningTable.available_for(location: other, starts_at: starts_at, party_size: party_size).first
       Alternative.new(location: other, starts_at: starts_at, dining_table: table) if table
     end

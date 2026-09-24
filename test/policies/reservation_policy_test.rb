@@ -108,4 +108,32 @@ class ReservationPolicyTest < ActiveSupport::TestCase
     assert_not policy(nil, @zurich_reservation).update?
     assert_not policy(nil, @zurich_reservation).cancel?
   end
+
+  # --- create? (manuell erfassen) ----------------------------------------------
+
+  test "every signed in user may open the empty form" do
+    assert policy(@admin, Reservation.new).create?
+    assert policy(@staff_zurich, Reservation.new).new?
+    assert policy(@staff_unassigned, Reservation.new).create?
+  end
+
+  test "visitors may not create reservations" do
+    assert_not policy(nil, Reservation.new).create?
+    assert_not policy(nil, Reservation.new(dining_table: dining_tables(:zurich_1))).create?
+  end
+
+  test "admin may create reservations on tables of every location" do
+    assert policy(@admin, Reservation.new(dining_table: dining_tables(:zurich_1))).create?
+    assert policy(@admin, Reservation.new(dining_table: dining_tables(:luzern_1))).create?
+  end
+
+  test "staff may only create reservations on tables of their own locations" do
+    assert policy(@staff_zurich, Reservation.new(dining_table: dining_tables(:zurich_1))).create?
+    assert_not policy(@staff_zurich, Reservation.new(dining_table: dining_tables(:luzern_1))).create?
+    assert_not policy(@staff_luzern, Reservation.new(dining_table: dining_tables(:zurich_1))).create?
+  end
+
+  test "staff without a location may not create reservations on any table" do
+    assert_not policy(@staff_unassigned, Reservation.new(dining_table: dining_tables(:zurich_1))).create?
+  end
 end
