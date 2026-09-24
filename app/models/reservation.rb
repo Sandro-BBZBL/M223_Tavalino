@@ -7,6 +7,9 @@ class Reservation < ApplicationRecord
   has_one :location, through: :dining_table
 
   has_secure_token :confirmation_code
+  
+  # Aktivitätsprotokoll (PaperTrail). Der geheime Code und technische Felder werden nicht protokolliert.
+  has_paper_trail skip: %i[confirmation_code lock_version created_at updated_at]
 
   # Optimistic Locking: Rails nutzt die Spalte lock_version automatisch und wirft
   # ActiveRecord::StaleObjectError, wenn jemand anderes zuerst gespeichert hat.

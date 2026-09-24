@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_24_205134) do
   create_table "dining_tables", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.integer "capacity", null: false
@@ -73,6 +73,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_100000) do
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["email_confirmation_token"], name: "index_users_on_email_confirmation_token", unique: true
+  end
+
+  create_table "versions", force: :cascade do |t|
+    t.datetime "created_at"
+    t.string "event", null: false
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.text "object", limit: 1073741823
+    t.text "object_changes", limit: 1073741823
+    t.string "whodunnit"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
   add_foreign_key "dining_tables", "locations"

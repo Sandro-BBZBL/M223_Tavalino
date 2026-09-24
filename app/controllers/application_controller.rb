@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern
 
+  before_action :set_paper_trail_whodunnit
+
   helper_method :current_user
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -19,6 +21,13 @@ class ApplicationController < ActionController::Base
 
   def user_not_authorized
     redirect_to root_path, alert: "keine Berechtigung"
+  end
+
+  # PaperTrail: Wer hat die Änderung gemacht? Nur im Mitarbeiter- und Admin-Bereich der
+  # angemeldete Benutzer. Alles andere (Gäste) bleibt ohne Akteur, auch wenn im selben
+  # Browser zufällig ein Mitarbeiter angemeldet ist.
+  def user_for_paper_trail
+    current_user&.id if controller_path.start_with?("staff/", "admin/")
   end
 
   # Gäste haben kein Konto. Wer eine Reservation gebucht oder mit Code und

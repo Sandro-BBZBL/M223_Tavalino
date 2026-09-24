@@ -214,4 +214,58 @@ class ReservationTest < ActiveSupport::TestCase
       assert @dinner.cancel(respecting_deadline: false)
     end
   end
+
+  # --- Aktivitätsprotokoll (PaperTrail) -----------------------------------------
+
+  test "booking records a create version without the secret code" do
+    reservation = Reservation.new(dining_table: dining_tables(:zurich_2), starts_at: @dinner.starts_at + 1.day,
+                                  party_size: 2, guest_name: "Bob Gast", guest_email: "bob@example.com")
+
+    assert_difference "PaperTrail::Version.count", 1 do
+      assert reservation.book
+    end
+
+    version = reservation.versions.last
+    assert_equal "create", version.event
+    assert_includes version.changeset.keys, "guest_name"
+    assert_not_includes version.changeset.keys, "confirmation_code"
+  end
+
+  test "an update records only the changed business fields" do
+    assert_difference "@dinner.versions.count", 1 do
+      @dinner.update!(party_size: 3)
+    end
+
+    changeset = @dinner.versions.last.changeset
+    assert_equal [ 2, 3 ], changeset["party_size"]
+    assert_not_includes changeset.keys, "lock_version"
+    assert_not_includes changeset.keys, "updated_at"
+  end
+
+  test "cancelling records the status change" do
+    @dinner.cancel
+
+    assert_equal "update", @dinner.versions.last.event
+    assert_equal [ "confirmed", "cancelled" ], @dinner.versions.last.changeset["status"]
+  end
+
+  test "a rejected booking records no version" do
+    reservation = Reservation.new(dining_table: dining_tables(:zurich_1), starts_at: @dinner.starts_at,
+                                  party_size: 2, guest_name: "Bob Gast", guest_email: "bob@example.com")
+
+    assert_no_difference "PaperTrail::Version.count" do
+      assert_not reservation.book
+    end
+  end
+
+  test "a stale update records no version" do
+    old_version = @dinner.lock_version
+    Reservation.find(@dinner.id).update!(party_size: 3)
+
+    assert_no_difference "PaperTrail::Version.count" do
+      assert_raises(ActiveRecord::StaleObjectError) do
+        Reservation.find(@dinner.id).update_with_lock(party_size: 4, lock_version: old_version)
+      end
+    end
+  end
 end
