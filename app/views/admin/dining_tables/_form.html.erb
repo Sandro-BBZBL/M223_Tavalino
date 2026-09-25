@@ -1,0 +1,27 @@
+<% if @dining_table.errors.any? %>
+  <div role="alert">
+    <ul>
+      <% @dining_table.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: [ :admin, @location, @dining_table ] do |f| %>
+  <div>
+    <%= f.label :number, "Tischnummer" %><br>
+    <%= f.number_field :number, min: 1 %>
+  </div>
+  <div>
+    <%= f.label :capacity, "Plätze (Kapazität)" %><br>
+    <%= f.number_field :capacity, min: 1 %>
+  </div>
+  <div>
+    <%= f.check_box :active %>
+    <%= f.label :active, "Aktiv (kann reserviert werden)" %>
+  </div>
+  <p><%= f.submit %></p>
+<% end %>
+
+<p><%= link_to "Zurück zur Tischliste", admin_location_dining_tables_path(@location) %></p>

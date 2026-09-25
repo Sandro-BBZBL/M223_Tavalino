@@ -1,2 +1,37 @@
 <h1>Dashboard</h1>
 <p>Angemeldet als <%= current_user.name %> (Rolle: <%= current_user.role %>)</p>
+
+<h2>Standorte und Tische</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Standort</th>
+      <th>Adresse</th>
+      <th>Aktive Tische</th>
+      <th>Deaktivierte Tische</th>
+      <th>Plätze (aktive Tische)</th>
+      <th>Aktionen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @locations.each do |location| %>
+      <% active_tables = location.dining_tables.select(&:active?) %>
+      <tr data-location-id="<%= location.id %>">
+        <td><%= location.name %></td>
+        <td><%= location.address %></td>
+        <td data-active-count><%= active_tables.size %></td>
+        <td data-inactive-count><%= location.dining_tables.size - active_tables.size %></td>
+        <td data-seats><%= active_tables.sum(&:capacity) %></td>
+        <td><%= link_to "Tische verwalten", admin_location_dining_tables_path(location) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>Weitere Bereiche</h2>
+<ul>
+  <li><%= link_to "Benutzer verwalten", admin_users_path %></li>
+  <li><%= link_to "Aktivitäten", staff_activities_path %></li>
+  <li><%= link_to "Reservationen", staff_reservations_path %></li>
+</ul>

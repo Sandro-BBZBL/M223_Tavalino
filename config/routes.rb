@@ -23,6 +23,9 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboards#show", as: :dashboard
     resources :users, only: %i[index edit update]
+    resources :locations, only: [] do
+      resources :dining_tables, only: %i[index new create edit update]
+    end
   end
 
   resource :profile, only: %i[show edit update]

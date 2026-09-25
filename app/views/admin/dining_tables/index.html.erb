@@ -1,0 +1,33 @@
+<h1>Tische – <%= @location.name %></h1>
+
+<p>
+  <%= link_to "Zurück zum Dashboard", admin_dashboard_path %> |
+  <%= link_to "Tisch anlegen", new_admin_location_dining_table_path(@location) %>
+</p>
+
+<% if @dining_tables.empty? %>
+  <p>Für diesen Standort gibt es noch keine Tische.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>Nummer</th>
+        <th>Plätze</th>
+        <th>Status</th>
+        <th>Künftige Reservationen</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @dining_tables.each do |table| %>
+        <tr data-table-id="<%= table.id %>">
+          <td><%= table.number %></td>
+          <td><%= table.capacity %></td>
+          <td><%= table.active? ? "aktiv" : "deaktiviert" %></td>
+          <td data-upcoming><%= @upcoming_counts.fetch(table.id, 0) %></td>
+          <td><%= link_to "Bearbeiten", edit_admin_location_dining_table_path(@location, table) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
