@@ -1,9 +1,24 @@
-# Projektantrag: Tavolino-Tischreservation
+# Projektdokumentation: Tavolino-Tischreservation
 
-**Modul:** 24-223-E Multi-User-Applikationen objektorientiert realisieren
-**Datum:** 18.09.2026 (überarbeitet am 21.09.2026 nach Feedback)
-**Autor:** Sandro Bucher
+**Modul:** 24-223-E Multi-User-Applikationen objektorientiert realisieren  
+**Datum:** 25.09.2026 (Projektantrag vom 18.09.2026, überarbeitet am 21.09.2026 nach Feedback, weitergeführt als Projektdokumentation am 25.09.2026)  
+**Autor:** Sandro Bucher  
 **Schulklasse:** 24 E
+
+---
+
+## Inhaltsverzeichnis
+
+- [1. Problemstellung](#1-problemstellung)
+- [2. Projekt](#2-projekt)
+- [3. Anforderungsanalyse](#3-anforderungsanalyse)
+- [4. Änderungen nach dem Feedback (21.09.2026)](#4-änderungen-nach-dem-feedback-21092026)
+- [5. Stand der Umsetzung](#5-stand-der-umsetzung)
+- [6. Abweichungen vom Projektantrag](#6-abweichungen-vom-projektantrag)
+- [7. Testing](#7-testing)
+- [8. Prüfung der Anforderungen](#8-prüfung-der-anforderungen)
+- [9. Offene Punkte](#9-offene-punkte)
+- [10. Quellen](#10-quellen)
 
 ---
 
@@ -173,11 +188,23 @@ erDiagram
         int erfasst_von_benutzer_id FK "optional, nur bei manueller Erfassung"
     }
 
+    VERSION {
+        int id PK
+        string item_type "immer Reservation"
+        int item_id "ID der Reservation"
+        string event "create oder update"
+        string whodunnit "Benutzer-ID, leer = Gast"
+        text object_changes "geänderte Felder alt/neu"
+        datetime erstellt_am
+    }
+
     STANDORT ||--|{ TISCH : "hat"
     TISCH ||--o{ RESERVATION : "wird reserviert in"
     BENUTZER |o--o{ RESERVATION : "erfasst manuell"
     BENUTZER ||--o{ BENUTZER_STANDORT : "zugeordnet"
     STANDORT ||--o{ BENUTZER_STANDORT : "zugewiesen"
+    RESERVATION ||--o{ VERSION : "wird protokolliert in"
+    BENUTZER |o--o{ VERSION : "ist Akteur von"
 ```
 
 **Wichtige Änderungen gegenüber dem ersten Entwurf**
@@ -187,6 +214,7 @@ erDiagram
 - **`RESERVATION`** hat `beginn` und `ende` statt `datum` und `uhrzeit`, damit die Überschneidungsprüfung mit zwei Zeitpunkten einfach und korrekt ist. `lock_version` ermöglicht das Optimistic Locking. Der Status kennt nur `bestaetigt` und `storniert`. Die Felder `erstellt_am` und `geaendert_am` ersetzen den bisherigen `zeitstempel`.
 - **`TISCH`** hat das Feld `aktiv`, damit der Admin Tische deaktivieren kann.
 - **`erfasst_von_benutzer_id`** ist nur gesetzt, wenn ein Mitarbeiter die Reservation manuell erfasst hat.
+- **`VERSION`** (ergänzt am 25.09.2026 während der Umsetzung): Das Aktivitätsprotokoll wird mit dem Gem PaperTrail geführt. Jede Buchung, Änderung und Stornierung einer Reservation erzeugt einen Eintrag mit Zeitstempel, Ereignis, geänderten Feldern und Akteur (`whodunnit`). Ist `whodunnit` leer, war es ein Gast. `whodunnit` ist technisch kein Fremdschlüssel, sondern die Benutzer-ID als Text (Vorgabe von PaperTrail). Die Spalte `object` (vollständiger alter Stand) ist ebenfalls vorhanden und im Diagramm der Übersicht halber weggelassen.
 
 **Umsetzung in Rails (Namen im Code)**
 
@@ -201,6 +229,14 @@ erDiagram
 | gast_name / gast_email / gast_telefon | `guest_name` / `guest_email` / `guest_phone` |
 | bestaetigungscode | `confirmation_code` |
 | erfasst_von_benutzer_id | `user_id` (optional) |
+| Version (Aktivitätsprotokoll) | `PaperTrail::Version` (Tabelle `versions`) |
+| email | `email_address` |
+| rolle Mitarbeiter / Admin | `role`: `staff` / `admin` |
+| status bestaetigt / storniert | `status`: `confirmed` / `cancelled` |
+| personenzahl / dauer_minuten | `party_size` / `duration_minutes` |
+| nummer / kapazitaet / aktiv | `number` / `capacity` / `active` |
+| unbestaetigte_email / bestaetigungs_token / bestaetigung_gesendet_am | `unconfirmed_email` / `email_confirmation_token` / `email_confirmation_sent_at` |
+| erstellt_am / geaendert_am | `created_at` / `updated_at` (alle Tabellen) |
 
 ### Breadboards aller User-Flows der 1. Iteration
 
@@ -252,6 +288,7 @@ Abzubildende User-Flows:
 
 ### Fat-Marker-Sketches (Screens) der 1. Iteration
 
+Die Fat-Marker-Sketches wurden von Hand gezeichnet und beim Kursleiter in Papierform abgegeben.
 
 Abzubildende Screens:
 
@@ -273,3 +310,135 @@ Abzubildende Screens:
 | Eine DB-Sperre über fünf Minuten ist ungeeignet, anderen Anwendungsfall wählen. | Die 5-Minuten-Sperre ist entfernt. Locking-Anwendungsfall ist neu **Optimistic Locking** bei gleichzeitiger Bearbeitung einer Reservation durch mehrere Mitarbeiter. Der Gast-Ablauf hält keine Sperre mehr. |
 | Überschneidungen berücksichtigen, ein Unique-Index auf Tisch und Startzeit reicht nicht. | Doppelbuchungen werden durch eine **Überschneidungsprüfung** (Beginn A < Ende B und Ende A > Beginn B) innerhalb einer kurzen Transaktion verhindert. Stornierte Reservationen zählen nicht. |
 | Umfang: OK. | Der Umfang bleibt gleich. Gäste reservieren ohne Konto, und die Konten der Mitarbeiter und Admins folgen den Kursvorgaben (Authentifizierung, Profil, Benutzerverwaltung). |
+
+---
+
+## 5. Stand der Umsetzung
+
+Die 1. MVP-Iteration ist vollständig umgesetzt. Alle acht funktionalen Anforderungen sind vorhanden, und alle 252 automatisierten Tests laufen erfolgreich. Installation, Technologie-Stack und Demo-Konten stehen im `README.md`.
+
+Die Applikation ist in drei Bereiche gegliedert: den öffentlichen Gast-Bereich, den Mitarbeiter-Bereich (`/staff`) und den Admin-Bereich (`/admin`). Die Fachlogik liegt im Model `Reservation` (Buchung, Bearbeitung, Stornierung), die Berechtigungen in Pundit-Policies.
+
+### Multi-User-Aspekte
+
+<!-- caption: Umsetzung der Multi-User-Aspekte -->
+| Kriterium | Umsetzung |
+|---|---|
+| Authentifizierung | Anmeldung mit E-Mail und Passwort (bcrypt). Session wird beim Login neu erzeugt. Gleiche Fehlermeldung bei falscher E-Mail und falschem Passwort. |
+| Rollen und Berechtigungen | Gast (ohne Konto), Mitarbeiter, Admin. Pundit-Policies und Policy-Scopes: Mitarbeiter sehen nur Daten ihrer Standorte. |
+| Benutzerprofil | Name ändern, Passwort ändern (nur mit aktuellem Passwort), E-Mail ändern mit Bestätigungslink. |
+| Benutzerverwaltung | Admin vergibt Rollen und weist Standorte zu. Die eigene Admin-Rolle kann nicht entfernt werden. |
+| Transaktionen und Locking | Buchung in einer Transaktion mit Überschneidungsprüfung; Optimistic Locking bei der Bearbeitung (siehe unten). |
+| Aktivitätsprotokoll | PaperTrail protokolliert Buchung, Änderung und Stornierung mit Akteur. Einsehbar unter «Aktivitäten». |
+| Fehlerbehandlung | Serverseitige Prüfung, Formulare behalten die Eingaben, verständliche Meldungen, Erfolgsmeldungen als Flash. |
+
+### Transaktionen und Locking im Code
+
+Die Überschneidungsbedingung steht einmal als Scope und wird für die Suche und die Validierung verwendet. Die Buchung läuft in einer Transaktion:
+
+```ruby
+scope :overlapping, lambda { |starts_at, ends_at|
+  where("reservations.starts_at < ? AND reservations.ends_at > ?", ends_at, starts_at)
+}
+
+def book
+  transaction do
+    dining_table&.lock!
+    save   # Überschneidungsprüfung läuft innerhalb der Transaktion
+  end
+end
+```
+
+Bei der Bearbeitung sendet das Formular die `lock_version` mit. Ist sie veraltet, wirft `update_with_lock` einen `ActiveRecord::StaleObjectError`, es wird nichts gespeichert, und der Mitarbeiter sieht den aktuellen Stand mit dem Hinweis «Diese Reservation wurde inzwischen geändert» (HTTP 409).
+
+---
+
+## 6. Abweichungen vom Projektantrag
+
+<!-- caption: Abweichungen vom Projektantrag mit Begründung -->
+| Nr. | Abweichung | Begründung |
+|---|---|---|
+| 1 | SQLite ignoriert die Zeilensperre `lock!`. Buchungen laufen trotzdem nacheinander, weil Rails unter SQLite Transaktionen mit `BEGIN IMMEDIATE` startet (nur ein Schreibvorgang gleichzeitig). | SQLite ist der Rails-Standard und reicht für die Entwicklung. Mit MariaDB oder PostgreSQL wirkt `lock!` ohne Code-Änderung als echte Zeilensperre. |
+| 2 | Aktivitätsprotokoll mit dem Gem PaperTrail; neue Entität `VERSION` im ERM. | Bewährte Bibliothek statt Eigenbau. Der Reservationscode wird nicht protokolliert. |
+| 3 | Kein eigenes Mitarbeiter-Dashboard: Die Reservationsübersicht ist die Startseite nach dem Login. | Mitarbeiter brauchen zuerst die Reservationen; ein zusätzlicher Screen bringt keinen Mehrwert. |
+| 4 | Stornierte Reservationen können nicht mehr bearbeitet werden (statt Konflikterkennung über Optimistic Locking). | Der Tisch könnte bereits neu vergeben sein. Ergebnis wie im Antrag: nichts wird still überschrieben. |
+| 5 | Tische mit künftigen Reservationen können nicht deaktiviert oder unter deren Personenzahl verkleinert werden. | Verhindert bestätigte Reservationen an fehlenden oder zu kleinen Tischen. |
+| 6 | Die 2-Stunden-Frist gilt nur für Gäste; Mitarbeiter können jederzeit stornieren. | Kurzfristige telefonische Absagen müssen erfasst werden können. |
+| 7 | Suche nur 11:00–21:30 im 30-Minuten-Raster, 1–12 Personen. | Entspricht den Öffnungszeiten, verhindert unsinnige Eingaben. |
+| 8 | Zusätzlich: Bestätigungs-E-Mail an den Gast und Rate Limiting beim Abruf (10 Versuche pro 3 Minuten). | Gast hat den Code auch später zur Hand; Codes können nicht durchprobiert werden. |
+
+---
+
+## 7. Testing
+
+Die Tests nutzen Minitest mit Fixtures (zwei Standorte, Admin, je ein Mitarbeiter pro Standort, ein Mitarbeiter ohne Standort). Ausführen mit `bin/rails test`.
+
+<!-- caption: Testarten und Anzahl Tests -->
+| Testart | Anzahl | Schwerpunkt |
+|---|---|---|
+| Model | 74 | Überschneidung, Buchung, Optimistic Locking, Stornierungsfrist, Suche |
+| Policy | 41 | Berechtigungen und Scopes je Rolle |
+| Controller | 123 | Abläufe über HTTP, Meldungen, verweigerte Zugriffe |
+| Integration | 11 | Aktivitätsprotokoll mit richtigem Akteur |
+| Mailer | 3 | Bestätigungsmails |
+| **Total** | **252** | |
+
+Wichtige Tests zur Fachregel, zu Zugriffen und zu konkurrierenden Änderungen:
+
+<!-- caption: Auswahl wichtiger Tests -->
+| Test | Prüft |
+|---|---|
+| `partially overlapping slot (...) is rejected` | Überschneidende Zeiträume am selben Tisch werden abgelehnt. |
+| `back-to-back reservations do not overlap` | Direkt anschliessende Reservation ist erlaubt. |
+| `book rejects the second booking of the same slot` | Zweite Buchung wird abgelehnt, nichts wird gespeichert. |
+| `staff sees only reservations of their own location` | Mitarbeiter sehen keine fremden Standorte. |
+| `staff cannot move a reservation to a table of a foreign location` | Manipulierte Anfrage wird verweigert (404). |
+| `staff has no access to the dashboard` | Admin-Bereich ist für Mitarbeiter gesperrt. |
+| `concurrent change: stale version is rejected with the current state` | Veraltete Version ergibt 409 mit aktuellem Stand. |
+
+### Testergebnis
+
+![Vollständiger Testlauf: 252 Tests, 0 Fehler](img/test_vorher.png)
+
+*Abbildung: Vollständiger Testlauf: 252 Tests, 0 Fehler*
+
+Um zu zeigen, dass die Tests Fehler finden, wurde im Scope `overlapping` `<` durch `<=` ersetzt. Dadurch gilt eine direkt anschliessende Reservation fälschlich als Überschneidung, und der Test `back-to-back reservations do not overlap` schlägt fehl. Danach wurde die Änderung rückgängig gemacht.
+
+![Der Test schlägt mit der fehlerhaften Bedingung (<=) fehl](img/test_fehler.png)
+
+*Abbildung: Der Test schlägt mit der fehlerhaften Bedingung (<=) fehl*
+
+---
+
+## 8. Prüfung der Anforderungen
+
+Alle acht funktionalen Anforderungen sind umgesetzt und mit automatisierten Tests geprüft (Model-, Controller- und Policy-Tests). Ergebnis: **erfüllt**.
+
+<!-- caption: Prüfung der Qualitätsattribute -->
+| Nr. | Qualitätsattribut | Prüfung | Ergebnis |
+|---|---|---|---|
+| 1 | Datenkonsistenz | Tests: zweite überschneidende Buchung wird abgelehnt. Kein Test mit echt gleichzeitigen Anfragen. | teilweise erfüllt |
+| 2 | Performance | Nicht gemessen. | nicht geprüft |
+| 3 | Konflikterkennung | Tests: veraltete Version wird mit 409 und aktuellem Stand abgelehnt. | erfüllt |
+| 4 | Nachvollziehbarkeit | Tests: Einträge mit Akteur, Sichtbarkeit je Standort. | erfüllt |
+| 5 | Sicherheit der Konten | Mindestlänge 12, bcrypt, `authenticate_by` (kein Timing-Unterschied), zufällige Codes mit Rate Limiting. | erfüllt |
+
+---
+
+## 9. Offene Punkte
+
+- Lasttest für Performance (500 Reservationen, zehn gleichzeitige Suchanfragen).
+- Test mit zwei gleichzeitigen Buchungen, idealerweise auf MariaDB oder PostgreSQL.
+- Controller-Tests für Registrierung, Profil und Passwortänderung.
+- Aktivitätsprotokoll auch für Tische und Benutzerkonten.
+- Gestaltung der Oberfläche (CSS).
+
+---
+
+## 10. Quellen
+
+- Rails Guides, Locking: https://guides.rubyonrails.org/active_record_querying.html#locking-records-for-update
+- Rails API, Optimistic Locking: https://api.rubyonrails.org/classes/ActiveRecord/Locking/Optimistic.html
+- Pundit: https://github.com/varvet/pundit
+- PaperTrail: https://github.com/paper-trail-gem/paper_trail
+- SQLite, Transaktionen: https://www.sqlite.org/lang_transaction.html
