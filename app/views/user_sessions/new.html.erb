@@ -1,13 +1,17 @@
-<h1>Anmelden</h1>
+<div class="mx-auto max-w-md py-8">
+  <p class="eyebrow">Mitarbeiterbereich</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Anmelden</h1>
+  <div class="divider-gold"></div>
 
-<%= form_with model: @user, url: user_sessions_path do |f| %>
-  <div>
-    <%= f.label :email_address, "E-Mail" %><br>
-    <%= f.email_field :email_address %>
-  </div>
-  <div>
-    <%= f.label :password, "Passwort" %><br>
-    <%= f.password_field :password %>
-  </div>
-  <p><%= f.submit "Anmelden" %></p>
-<% end %>
+  <%= form_with model: @user, url: user_sessions_path, class: "card space-y-6" do |f| %>
+    <div>
+      <%= f.label :email_address, "E-Mail", class: "form-label" %>
+      <%= f.email_field :email_address, class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :password, "Passwort", class: "form-label" %>
+      <%= f.password_field :password, class: "form-input" %>
+    </div>
+    <div class="pt-2"><%= f.submit "Anmelden", class: "btn-primary w-full" %></div>
+  <% end %>
+</div>

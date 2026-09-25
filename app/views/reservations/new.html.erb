@@ -1,45 +1,53 @@
-<h1>Reservation abschliessen</h1>
+<div class="mx-auto max-w-2xl">
+  <%= link_to "← Zurück zur Suche", location_path(@dining_table.location), class: "link-muted" %>
 
-<p>
-  <strong><%= @dining_table.location.name %></strong>,
-  Tisch <%= @dining_table.number %> (<%= @dining_table.capacity %> Plätze)<br>
-  <% if @reservation.starts_at %>
-    <%= @reservation.starts_at.strftime("%d.%m.%Y, %H:%M") %> Uhr,
-    <%= @reservation.duration_minutes %> Minuten,
-  <% end %>
-  <%= @reservation.party_size %> Person(en)
-</p>
+  <p class="eyebrow mt-8">Reservation</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Reservation abschliessen</h1>
+  <div class="divider-gold"></div>
 
-<% if @reservation.errors.any? %>
-  <div role="alert">
-    <ul>
-      <% @reservation.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+  <div class="card table-own">
+    <p class="font-serif text-2xl tracking-wide text-amber-400"><%= @dining_table.location.name %></p>
+    <p class="mt-2 text-sm font-light text-zinc-300">
+      Tisch <%= @dining_table.number %> (<%= @dining_table.capacity %> Plätze)<br>
+      <% if @reservation.starts_at %>
+        <%= @reservation.starts_at.strftime("%d.%m.%Y, %H:%M") %> Uhr,
+        <%= @reservation.duration_minutes %> Minuten,
       <% end %>
-    </ul>
+      <%= @reservation.party_size %> Person(en)
+    </p>
   </div>
-<% end %>
 
-<%= render "reservations/alternatives", alternatives: @alternatives, party_size: @reservation.party_size %>
+  <% if @reservation.errors.any? %>
+    <div role="alert" class="alert-error mt-8">
+      <ul class="space-y-1">
+        <% @reservation.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
 
-<%= form_with model: @reservation, url: reservations_path do |f| %>
-  <%= f.hidden_field :dining_table_id, value: @dining_table.id %>
-  <%= f.hidden_field :starts_at, value: @reservation.starts_at&.iso8601 %>
-  <%= f.hidden_field :party_size %>
-
-  <div>
-    <%= f.label :guest_name, "Name" %><br>
-    <%= f.text_field :guest_name %>
+  <div class="mt-8">
+    <%= render "reservations/alternatives", alternatives: @alternatives, party_size: @reservation.party_size %>
   </div>
-  <div>
-    <%= f.label :guest_email, "E-Mail" %><br>
-    <%= f.email_field :guest_email %>
-  </div>
-  <div>
-    <%= f.label :guest_phone, "Telefon (optional)" %><br>
-    <%= f.telephone_field :guest_phone %>
-  </div>
-  <p><%= f.submit "Verbindlich reservieren" %></p>
-<% end %>
 
-<p><%= link_to "Zurück zur Suche", location_path(@dining_table.location) %></p>
+  <%= form_with model: @reservation, url: reservations_path, class: "card mt-8 space-y-6" do |f| %>
+    <%= f.hidden_field :dining_table_id, value: @dining_table.id %>
+    <%= f.hidden_field :starts_at, value: @reservation.starts_at&.iso8601 %>
+    <%= f.hidden_field :party_size %>
+
+    <div>
+      <%= f.label :guest_name, "Name", class: "form-label" %>
+      <%= f.text_field :guest_name, class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :guest_email, "E-Mail", class: "form-label" %>
+      <%= f.email_field :guest_email, class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :guest_phone, "Telefon (optional)", class: "form-label" %>
+      <%= f.telephone_field :guest_phone, class: "form-input" %>
+    </div>
+    <div class="pt-2"><%= f.submit "Verbindlich reservieren", class: "btn-primary w-full" %></div>
+  <% end %>
+</div>

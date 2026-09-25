@@ -1,6 +1,6 @@
 <% if @dining_table.errors.any? %>
-  <div role="alert">
-    <ul>
+  <div role="alert" class="alert-error mb-8">
+    <ul class="space-y-1">
       <% @dining_table.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
@@ -8,20 +8,20 @@
   </div>
 <% end %>
 
-<%= form_with model: [ :admin, @location, @dining_table ] do |f| %>
+<%= form_with model: [ :admin, @location, @dining_table ], class: "card space-y-6" do |f| %>
   <div>
-    <%= f.label :number, "Tischnummer" %><br>
-    <%= f.number_field :number, min: 1 %>
+    <%= f.label :number, "Tischnummer", class: "form-label" %>
+    <%= f.number_field :number, min: 1, class: "form-input" %>
   </div>
   <div>
-    <%= f.label :capacity, "Plätze (Kapazität)" %><br>
-    <%= f.number_field :capacity, min: 1 %>
+    <%= f.label :capacity, "Plätze (Kapazität)", class: "form-label" %>
+    <%= f.number_field :capacity, min: 1, class: "form-input" %>
   </div>
-  <div>
-    <%= f.check_box :active %>
-    <%= f.label :active, "Aktiv (kann reserviert werden)" %>
+  <div class="flex items-center gap-3">
+    <%= f.check_box :active, class: "form-checkbox" %>
+    <%= f.label :active, "Aktiv (kann reserviert werden)", class: "cursor-pointer text-sm text-zinc-300" %>
   </div>
-  <p><%= f.submit %></p>
+  <div class="pt-2"><%= f.submit class: "btn-primary w-full" %></div>
 <% end %>
 
-<p><%= link_to "Zurück zur Tischliste", admin_location_dining_tables_path(@location) %></p>
+<p class="mt-8"><%= link_to "← Zurück zur Tischliste", admin_location_dining_tables_path(@location), class: "link-muted" %></p>

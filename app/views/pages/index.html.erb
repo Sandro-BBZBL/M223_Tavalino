@@ -1,20 +1,32 @@
-<h1>Tavolino-Tischreservation</h1>
-<p>Reserviere jederzeit online einen Tisch – ganz ohne Konto.</p>
+<section class="py-8 lg:py-16">
+  <p class="eyebrow">Fine Dining · Online-Reservation</p>
+  <h1 class="max-w-3xl font-serif text-5xl leading-tight tracking-wide text-zinc-100 lg:text-6xl">Tavolino-Tischreservation</h1>
+  <div class="divider-gold"></div>
+  <p class="max-w-xl text-base font-light text-zinc-400">Reserviere jederzeit online einen Tisch – ganz ohne Konto.</p>
+</section>
 
-<h2>Standort wählen</h2>
-<ul>
-  <% @locations.each do |location| %>
-    <li>
-      <%= link_to location.name, location_path(location) %><br>
-      <%= location.address %>
-    </li>
+<section class="mt-8">
+  <h2 class="font-serif text-2xl tracking-wide text-zinc-100">Standort wählen</h2>
+  <ul class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    <% @locations.each do |location| %>
+      <li class="card group h-full hover:border-amber-500/50 hover:shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+        <%= link_to location.name, location_path(location),
+                    class: "font-serif text-2xl tracking-wide text-zinc-100 transition-all duration-300 group-hover:text-amber-400 after:absolute after:inset-0 after:content-['']" %>
+        <span class="mt-2 text-sm font-light text-zinc-400"><%= location.address %></span>
+        <span aria-hidden="true" class="mt-6 inline-flex items-center gap-2 text-xs font-medium tracking-[0.2em] text-amber-500/80 uppercase transition-all duration-300 group-hover:gap-3 group-hover:text-amber-400">
+          Tisch finden <span>→</span>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="mt-16 grid grid-cols-1 gap-8 border-t border-zinc-900 pt-10 text-sm text-zinc-400 md:grid-cols-2">
+  <p>Schon reserviert? <%= link_to "Reservation abrufen oder stornieren", new_reservation_lookup_path, class: "link-gold" %></p>
+
+  <% if current_user %>
+    <p class="md:text-right">Angemeldet als <span class="text-zinc-200"><%= current_user.name %></span>. <%= link_to "Zu den Reservationen", staff_reservations_path, class: "link-gold" %></p>
+  <% else %>
+    <p class="md:text-right">Mitarbeiter: <%= link_to "Anmelden", new_user_session_path, class: "link-gold" %></p>
   <% end %>
-</ul>
-
-<p>Schon reserviert? <%= link_to "Reservation abrufen oder stornieren", new_reservation_lookup_path %></p>
-
-<% if current_user %>
-  <p>Angemeldet als <%= current_user.name %>. <%= link_to "Zu den Reservationen", staff_reservations_path %></p>
-<% else %>
-  <p>Mitarbeiter: <%= link_to "Anmelden", new_user_session_path %></p>
-<% end %>
+</section>

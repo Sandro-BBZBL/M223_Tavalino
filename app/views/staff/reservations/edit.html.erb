@@ -1,35 +1,39 @@
-<h1>Reservation bearbeiten</h1>
+<div class="mx-auto max-w-2xl">
+  <%= link_to "← Zurück zur Reservation", staff_reservation_path(@reservation), class: "link-muted" %>
 
-<p><%= link_to "Zurück zur Reservation", staff_reservation_path(@reservation) %></p>
+  <p class="eyebrow mt-8">Mitarbeiterbereich</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Reservation bearbeiten</h1>
+  <div class="divider-gold"></div>
 
-<% if @conflict %>
-  <div role="alert" data-conflict>
-    <p>
-      <strong>Diese Reservation wurde inzwischen geändert.</strong>
-      Deine Eingaben wurden nicht gespeichert.
-    </p>
-    <p>
-      Aktueller Stand (zuletzt geändert <%= @reservation.updated_at.strftime("%d.%m.%Y, %H:%M") %>):
-      <%= @reservation.starts_at.strftime("%d.%m.%Y, %H:%M") %> Uhr,
-      <%= @reservation.dining_table.location.name %>, Tisch <%= @reservation.dining_table.number %>,
-      <%= @reservation.party_size %> Person(en), <%= @reservation.guest_name %>.
-    </p>
-    <p>Das Formular unten zeigt den aktuellen Stand. Bearbeite die Reservation bei Bedarf erneut.</p>
-  </div>
-<% end %>
+  <% if @conflict %>
+    <div role="alert" data-conflict class="alert-warning mb-8 space-y-3">
+      <p>
+        <strong class="font-medium text-amber-400">Diese Reservation wurde inzwischen geändert.</strong>
+        Deine Eingaben wurden nicht gespeichert.
+      </p>
+      <p>
+        Aktueller Stand (zuletzt geändert <%= @reservation.updated_at.strftime("%d.%m.%Y, %H:%M") %>):
+        <%= @reservation.starts_at.strftime("%d.%m.%Y, %H:%M") %> Uhr,
+        <%= @reservation.dining_table.location.name %>, Tisch <%= @reservation.dining_table.number %>,
+        <%= @reservation.party_size %> Person(en), <%= @reservation.guest_name %>.
+      </p>
+      <p>Das Formular unten zeigt den aktuellen Stand. Bearbeite die Reservation bei Bedarf erneut.</p>
+    </div>
+  <% end %>
 
-<% if @reservation.errors.any? %>
-  <div role="alert">
-    <ul>
-      <% @reservation.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
+  <% if @reservation.errors.any? %>
+    <div role="alert" class="alert-error mb-8">
+      <ul class="space-y-1">
+        <% @reservation.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
 
-<%= form_with model: @reservation, url: staff_reservation_path(@reservation), method: :patch do |f| %>
-  <%= f.hidden_field :lock_version %>
-  <%= render "fields", f: f, tables: @tables %>
-  <p><%= f.submit "Änderungen speichern" %></p>
-<% end %>
+  <%= form_with model: @reservation, url: staff_reservation_path(@reservation), method: :patch, class: "card space-y-6" do |f| %>
+    <%= f.hidden_field :lock_version %>
+    <%= render "fields", f: f, tables: @tables %>
+    <div class="pt-2"><%= f.submit "Änderungen speichern", class: "btn-primary w-full" %></div>
+  <% end %>
+</div>

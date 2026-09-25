@@ -1,64 +1,73 @@
-<h1>Reservationen</h1>
+<div class="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <p class="eyebrow">Mitarbeiterbereich</p>
+    <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Reservationen</h1>
+  </div>
+  <% if @locations.any? %>
+    <%= link_to "Reservation erfassen", new_staff_reservation_path, class: "btn-primary" %>
+  <% end %>
+</div>
 
 <% if @locations.empty? %>
-  <p data-no-location>
+  <p data-no-location class="alert-warning">
     Dir ist noch kein Standort zugewiesen. Bitte wende dich an einen Admin,
     damit du Reservationen sehen kannst.
   </p>
 <% else %>
-  <p><%= link_to "Reservation erfassen", new_staff_reservation_path %></p>
-
-  <%= form_with url: staff_reservations_path, method: :get do |f| %>
-    <div>
-      <%= f.label :location_id, "Standort" %><br>
+  <%= form_with url: staff_reservations_path, method: :get, class: "card flex-row flex-wrap items-end gap-6" do |f| %>
+    <div class="min-w-48 flex-1">
+      <%= f.label :location_id, "Standort", class: "form-label" %>
       <%= f.select :location_id,
                    options_from_collection_for_select(@locations, :id, :name, params[:location_id]),
-                   include_blank: "Alle Standorte" %>
+                   { include_blank: "Alle Standorte" },
+                   class: "form-input" %>
     </div>
-    <div>
-      <%= f.label :date, "Datum" %><br>
-      <%= f.date_field :date, value: params[:date] %>
+    <div class="min-w-48 flex-1">
+      <%= f.label :date, "Datum", class: "form-label" %>
+      <%= f.date_field :date, value: params[:date], class: "form-input" %>
     </div>
-    <p>
-      <%= f.submit "Filtern", name: nil %>
-      <%= link_to "Zurücksetzen", staff_reservations_path %>
-    </p>
+    <div class="flex gap-3">
+      <%= f.submit "Filtern", name: nil, class: "btn-primary" %>
+      <%= link_to "Zurücksetzen", staff_reservations_path, class: "btn-secondary" %>
+    </div>
   <% end %>
 
   <% if params[:date].blank? %>
-    <p>Angezeigt werden alle Reservationen ab heute. Für einen bestimmten Tag ein Datum wählen.</p>
+    <p class="mt-4 text-xs font-light text-zinc-500">Angezeigt werden alle Reservationen ab heute. Für einen bestimmten Tag ein Datum wählen.</p>
   <% end %>
 
   <% if @reservations.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Datum</th>
-          <th>Zeit</th>
-          <th>Standort</th>
-          <th>Tisch</th>
-          <th>Personen</th>
-          <th>Gast</th>
-          <th>Status</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @reservations.each do |reservation| %>
-          <tr data-reservation-id="<%= reservation.id %>">
-            <td><%= reservation.starts_at.strftime("%d.%m.%Y") %></td>
-            <td><%= reservation.starts_at.strftime("%H:%M") %>–<%= reservation.ends_at.strftime("%H:%M") %></td>
-            <td><%= reservation.dining_table.location.name %></td>
-            <td><%= reservation.dining_table.number %></td>
-            <td><%= reservation.party_size %></td>
-            <td><%= reservation.guest_name %></td>
-            <td><%= reservation.confirmed? ? "bestätigt" : "storniert" %></td>
-            <td><%= link_to "Details", staff_reservation_path(reservation) %></td>
+    <div class="table-wrap mt-8">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Zeit</th>
+            <th>Standort</th>
+            <th>Tisch</th>
+            <th>Personen</th>
+            <th>Gast</th>
+            <th>Status</th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @reservations.each do |reservation| %>
+            <tr data-reservation-id="<%= reservation.id %>" class="<%= "opacity-60" unless reservation.confirmed? %>">
+              <td class="whitespace-nowrap text-zinc-100"><%= reservation.starts_at.strftime("%d.%m.%Y") %></td>
+              <td class="whitespace-nowrap"><%= reservation.starts_at.strftime("%H:%M") %>–<%= reservation.ends_at.strftime("%H:%M") %></td>
+              <td><%= reservation.dining_table.location.name %></td>
+              <td><%= reservation.dining_table.number %></td>
+              <td><%= reservation.party_size %></td>
+              <td class="text-zinc-100"><%= reservation.guest_name %></td>
+              <td><span class="badge <%= reservation.confirmed? ? "badge-gold" : "badge-muted" %>"><%= reservation.confirmed? ? "bestätigt" : "storniert" %></span></td>
+              <td class="text-right"><%= link_to "Details", staff_reservation_path(reservation), class: "link-gold text-sm" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% else %>
-    <p>Keine Reservationen gefunden.</p>
+    <p class="mt-8 rounded-md border border-dashed border-zinc-800 p-10 text-center text-sm font-light text-zinc-500">Keine Reservationen gefunden.</p>
   <% end %>
 <% end %>

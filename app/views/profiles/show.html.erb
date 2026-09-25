@@ -1,21 +1,21 @@
-<h1>Mein Profil</h1>
+<div class="mx-auto max-w-2xl">
+  <p class="eyebrow">Konto</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Mein Profil</h1>
+  <div class="divider-gold"></div>
 
-<dl>
-  <dt>Name</dt>
-  <dd><%= @user.name %></dd>
-  <dt>E-Mail</dt>
-  <dd><%= @user.email_address %></dd>
-  <dt>Rolle</dt>
-  <dd><%= @user.role %></dd>
-  <dt>Standorte</dt>
-  <dd><%= @user.locations.map(&:name).to_sentence.presence || "keine zugeordnet" %></dd>
-</dl>
+  <dl class="detail-list card py-2">
+    <div><dt>Name</dt><dd><%= @user.name %></dd></div>
+    <div><dt>E-Mail</dt><dd><%= @user.email_address %></dd></div>
+    <div><dt>Rolle</dt><dd><span class="badge badge-gold"><%= @user.role %></span></dd></div>
+    <div><dt>Standorte</dt><dd><%= @user.locations.map(&:name).to_sentence.presence || "keine zugeordnet" %></dd></div>
+  </dl>
 
-<% if @user.unconfirmed_email.present? %>
-  <p>Die Änderung auf <%= @user.unconfirmed_email %> wartet auf Bestätigung.</p>
-<% end %>
+  <% if @user.unconfirmed_email.present? %>
+    <p class="alert-warning mt-6">Die Änderung auf <%= @user.unconfirmed_email %> wartet auf Bestätigung.</p>
+  <% end %>
 
-<p>
-  <%= link_to "Profil bearbeiten", edit_profile_path %> |
-  <%= link_to "Passwort ändern", edit_password_path %>
-</p>
+  <div class="mt-8 flex flex-wrap gap-4">
+    <%= link_to "Profil bearbeiten", edit_profile_path, class: "btn-primary" %>
+    <%= link_to "Passwort ändern", edit_password_path, class: "btn-secondary" %>
+  </div>
+</div>

@@ -1,28 +1,29 @@
 <%# Gemeinsame Felder für Erfassen und Bearbeiten. Locals: f (Form-Builder), tables %>
 <div>
-  <%= f.label :starts_at, "Datum und Uhrzeit" %><br>
-  <%= f.datetime_local_field :starts_at, value: f.object.starts_at&.strftime("%Y-%m-%dT%H:%M") %>
-  (Dauer: <%= f.object.duration_minutes || Reservation::DEFAULT_DURATION_MINUTES %> Minuten)
+  <%= f.label :starts_at, "Datum und Uhrzeit", class: "form-label" %>
+  <%= f.datetime_local_field :starts_at, value: f.object.starts_at&.strftime("%Y-%m-%dT%H:%M"), class: "form-input" %>
+  <p class="form-hint">(Dauer: <%= f.object.duration_minutes || Reservation::DEFAULT_DURATION_MINUTES %> Minuten)</p>
 </div>
 <div>
-  <%= f.label :dining_table_id, "Tisch" %><br>
+  <%= f.label :dining_table_id, "Tisch", class: "form-label" %>
   <%= f.select :dining_table_id,
                tables.map { |table| [ "#{table.location.name} – Tisch #{table.number} (#{table.capacity} Plätze)", table.id ] },
-               prompt: "Bitte Tisch wählen" %>
+               { prompt: "Bitte Tisch wählen" },
+               class: "form-input" %>
 </div>
 <div>
-  <%= f.label :party_size, "Personenzahl" %><br>
-  <%= f.number_field :party_size, min: 1 %>
+  <%= f.label :party_size, "Personenzahl", class: "form-label" %>
+  <%= f.number_field :party_size, min: 1, class: "form-input" %>
 </div>
 <div>
-  <%= f.label :guest_name, "Name des Gastes" %><br>
-  <%= f.text_field :guest_name %>
+  <%= f.label :guest_name, "Name des Gastes", class: "form-label" %>
+  <%= f.text_field :guest_name, class: "form-input" %>
 </div>
 <div>
-  <%= f.label :guest_email, "E-Mail" %><br>
-  <%= f.email_field :guest_email %>
+  <%= f.label :guest_email, "E-Mail", class: "form-label" %>
+  <%= f.email_field :guest_email, class: "form-input" %>
 </div>
 <div>
-  <%= f.label :guest_phone, "Telefon" %><br>
-  <%= f.telephone_field :guest_phone %>
+  <%= f.label :guest_phone, "Telefon", class: "form-label" %>
+  <%= f.telephone_field :guest_phone, class: "form-input" %>
 </div>

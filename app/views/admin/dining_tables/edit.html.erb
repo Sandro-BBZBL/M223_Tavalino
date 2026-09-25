@@ -1,3 +1,7 @@
-<h1>Tisch <%= @dining_table.number_was || @dining_table.number %> bearbeiten – <%= @location.name %></h1>
+<div class="mx-auto max-w-xl">
+  <p class="eyebrow">Tischverwaltung</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Tisch <%= @dining_table.number_was || @dining_table.number %> bearbeiten – <%= @location.name %></h1>
+  <div class="divider-gold"></div>
 
-<%= render "form" %>
+  <%= render "form" %>
+</div>

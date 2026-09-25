@@ -1,33 +1,38 @@
-<h1>Tische – <%= @location.name %></h1>
+<%= link_to "← Zurück zum Dashboard", admin_dashboard_path, class: "link-muted" %>
 
-<p>
-  <%= link_to "Zurück zum Dashboard", admin_dashboard_path %> |
-  <%= link_to "Tisch anlegen", new_admin_location_dining_table_path(@location) %>
-</p>
+<div class="mt-8 mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <p class="eyebrow">Tischverwaltung</p>
+    <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Tische – <%= @location.name %></h1>
+  </div>
+  <%= link_to "Tisch anlegen", new_admin_location_dining_table_path(@location), class: "btn-primary" %>
+</div>
 
 <% if @dining_tables.empty? %>
-  <p>Für diesen Standort gibt es noch keine Tische.</p>
+  <p class="rounded-md border border-dashed border-zinc-800 p-10 text-center text-sm font-light text-zinc-500">Für diesen Standort gibt es noch keine Tische.</p>
 <% else %>
-  <table>
-    <thead>
-      <tr>
-        <th>Nummer</th>
-        <th>Plätze</th>
-        <th>Status</th>
-        <th>Künftige Reservationen</th>
-        <th>Aktionen</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @dining_tables.each do |table| %>
-        <tr data-table-id="<%= table.id %>">
-          <td><%= table.number %></td>
-          <td><%= table.capacity %></td>
-          <td><%= table.active? ? "aktiv" : "deaktiviert" %></td>
-          <td data-upcoming><%= @upcoming_counts.fetch(table.id, 0) %></td>
-          <td><%= link_to "Bearbeiten", edit_admin_location_dining_table_path(@location, table) %></td>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nummer</th>
+          <th>Plätze</th>
+          <th>Status</th>
+          <th>Künftige Reservationen</th>
+          <th>Aktionen</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @dining_tables.each do |table| %>
+          <tr data-table-id="<%= table.id %>" class="<%= "opacity-60" unless table.active? %>">
+            <td class="font-serif text-lg tracking-wide text-zinc-100"><%= table.number %></td>
+            <td><%= table.capacity %></td>
+            <td><span class="badge <%= table.active? ? "badge-emerald" : "badge-muted" %>"><%= table.active? ? "aktiv" : "deaktiviert" %></span></td>
+            <td data-upcoming><%= @upcoming_counts.fetch(table.id, 0) %></td>
+            <td><%= link_to "Bearbeiten", edit_admin_location_dining_table_path(@location, table), class: "link-gold" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% end %>

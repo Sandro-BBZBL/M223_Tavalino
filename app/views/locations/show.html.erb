@@ -1,57 +1,84 @@
-<h1><%= @location.name %></h1>
-<p><%= @location.address %></p>
+<div class="mb-12">
+  <%= link_to "← Zurück zur Standortwahl", root_path, class: "link-muted" %>
+  <p class="eyebrow mt-8">Standort</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100 lg:text-5xl"><%= @location.name %></h1>
+  <p class="mt-3 text-base font-light text-zinc-400"><%= @location.address %></p>
+  <div class="divider-gold"></div>
+</div>
 
-<h2>Freien Tisch suchen</h2>
+<div class="grid grid-cols-1 gap-12 lg:grid-cols-3">
+  <section class="lg:col-span-1">
+    <div class="card">
+      <h2 class="font-serif text-2xl tracking-wide text-zinc-100">Freien Tisch suchen</h2>
 
-<% if @search.errors.any? %>
-  <div role="alert">
-    <ul>
-      <% @search.errors.each do |error| %>
-        <li><%= error.message %></li>
+      <% if @search.errors.any? %>
+        <div role="alert" class="alert-error mt-6">
+          <ul class="space-y-1">
+            <% @search.errors.each do |error| %>
+              <li><%= error.message %></li>
+            <% end %>
+          </ul>
+        </div>
       <% end %>
-    </ul>
-  </div>
-<% end %>
 
-<%= form_with model: @search, scope: :search, url: location_path(@location), method: :get do |f| %>
-  <div>
-    <%= f.label :date, "Datum" %><br>
-    <%= f.date_field :date, min: Date.current.iso8601 %>
-  </div>
-  <div>
-    <%= f.label :time, "Uhrzeit" %><br>
-    <%= f.select :time, ReservationSearch::TIME_SLOTS %>
-  </div>
-  <div>
-    <%= f.label :party_size, "Personenzahl" %><br>
-    <%= f.number_field :party_size, min: 1, max: ReservationSearch::MAX_PARTY_SIZE %>
-  </div>
-  <p><%= f.submit "Freie Tische suchen", name: nil %></p>
-<% end %>
-
-<% if @tables %>
-  <h2>Ergebnis</h2>
-  <% if @tables.any? %>
-    <p>
-      Freie Tische am <%= @search.starts_at.strftime("%d.%m.%Y") %> um
-      <%= @search.starts_at.strftime("%H:%M") %> Uhr für <%= @search.party_size %> Person(en):
-    </p>
-    <ul>
-      <% @tables.each do |table| %>
-        <li data-table-id="<%= table.id %>">
-          Tisch <%= table.number %> (<%= table.capacity %> Plätze)
-          –
-          <%= link_to "Reservieren",
-                      new_reservation_path(dining_table_id: table.id,
-                                           starts_at: @search.starts_at.iso8601,
-                                           party_size: @search.party_size) %>
-        </li>
+      <%= form_with model: @search, scope: :search, url: location_path(@location), method: :get, class: "mt-6 space-y-6" do |f| %>
+        <div>
+          <%= f.label :date, "Datum", class: "form-label" %>
+          <%= f.date_field :date, min: Date.current.iso8601, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.label :time, "Uhrzeit", class: "form-label" %>
+          <%= f.select :time, ReservationSearch::TIME_SLOTS, {}, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.label :party_size, "Personenzahl", class: "form-label" %>
+          <%= f.number_field :party_size, min: 1, max: ReservationSearch::MAX_PARTY_SIZE, class: "form-input" %>
+        </div>
+        <div class="pt-2"><%= f.submit "Freie Tische suchen", name: nil, class: "btn-primary w-full" %></div>
       <% end %>
-    </ul>
-  <% else %>
-    <p>Zu dieser Zeit ist leider kein passender Tisch mehr frei.</p>
-    <%= render "reservations/alternatives", alternatives: @alternatives, party_size: @search.party_size %>
-  <% end %>
-<% end %>
+    </div>
+  </section>
 
-<p><%= link_to "Zurück zur Standortwahl", root_path %></p>
+  <section class="lg:col-span-2">
+    <% if @tables %>
+      <h2 class="font-serif text-2xl tracking-wide text-zinc-100">Ergebnis</h2>
+      <% if @tables.any? %>
+        <p class="mt-3 text-sm font-light text-zinc-400">
+          Freie Tische am <span class="text-zinc-200"><%= @search.starts_at.strftime("%d.%m.%Y") %></span> um
+          <span class="text-zinc-200"><%= @search.starts_at.strftime("%H:%M") %> Uhr</span> für <span class="text-zinc-200"><%= @search.party_size %> Person(en)</span>:
+        </p>
+        <ul class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <% @tables.each do |table| %>
+            <li data-table-id="<%= table.id %>" class="card table-free group">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-xs font-medium tracking-[0.2em] text-zinc-500 uppercase">Tisch</p>
+                  <p class="mt-1 font-serif text-4xl tracking-wide"><%= table.number %></p>
+                </div>
+                <span class="badge badge-emerald">frei</span>
+              </div>
+              <p class="mt-4 text-sm font-light text-zinc-400"><%= table.capacity %> Plätze</p>
+              <div class="mt-6">
+                <%= link_to "Reservieren",
+                            new_reservation_path(dining_table_id: table.id,
+                                                 starts_at: @search.starts_at.iso8601,
+                                                 party_size: @search.party_size),
+                            class: "btn-primary w-full" %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="alert-warning mt-6">Zu dieser Zeit ist leider kein passender Tisch mehr frei.</p>
+        <div class="mt-8">
+          <%= render "reservations/alternatives", alternatives: @alternatives, party_size: @search.party_size %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="flex h-full min-h-64 flex-col items-center justify-center rounded-md border border-dashed border-zinc-800 p-10 text-center">
+        <p class="font-serif text-2xl tracking-wide text-zinc-300">Dein Tisch erwartet dich</p>
+        <p class="mt-3 max-w-sm text-sm font-light text-zinc-500">Wähle Datum, Uhrzeit und Personenzahl, um verfügbare Tische zu sehen.</p>
+      </div>
+    <% end %>
+  </section>
+</div>

@@ -1,13 +1,14 @@
 <% if alternatives.present? %>
-  <div data-alternatives>
-    <h3>Alternativvorschläge</h3>
-    <ul>
+  <div data-alternatives class="card">
+    <h3 class="font-serif text-xl tracking-wide text-zinc-100">Alternativvorschläge</h3>
+    <ul class="mt-4 divide-y divide-zinc-800">
       <% alternatives.each do |alt| %>
         <% link_params = { dining_table_id: alt.dining_table.id, starts_at: alt.starts_at.iso8601, party_size: party_size } %>
-        <li>
+        <li class="py-3 first:pt-0 last:pb-0">
           <%= link_to "#{alt.location.name}, #{alt.starts_at.strftime('%d.%m.%Y, %H:%M')} Uhr " \
                       "(Tisch #{alt.dining_table.number}, #{alt.dining_table.capacity} Plätze)",
-                      local_assigns[:staff] ? new_staff_reservation_path(link_params) : new_reservation_path(link_params) %>
+                      local_assigns[:staff] ? new_staff_reservation_path(link_params) : new_reservation_path(link_params),
+                      class: "link-gold text-sm" %>
         </li>
       <% end %>
     </ul>

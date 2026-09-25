@@ -1,27 +1,31 @@
-<h1>Passwort ändern</h1>
+<div class="mx-auto max-w-md">
+  <%= link_to "← Zurück zum Profil", profile_path, class: "link-muted" %>
 
-<% if @user.errors.any? %>
-  <ul>
-    <% @user.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
-    <% end %>
-  </ul>
-<% end %>
+  <p class="eyebrow mt-8">Konto</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Passwort ändern</h1>
+  <div class="divider-gold"></div>
 
-<%= form_with model: @user, url: password_path, method: :patch do |f| %>
-  <div>
-    <%= f.label :current_password, "Aktuelles Passwort" %><br>
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
-  <div>
-    <%= f.label :password, "Neues Passwort (mindestens 12 Zeichen)" %><br>
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-  <div>
-    <%= f.label :password_confirmation, "Neues Passwort bestätigen" %><br>
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-  <p><%= f.submit "Passwort ändern" %></p>
-<% end %>
+  <% if @user.errors.any? %>
+    <ul class="alert-error mb-8 space-y-1">
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
 
-<p><%= link_to "Zurück zum Profil", profile_path %></p>
+  <%= form_with model: @user, url: password_path, method: :patch, class: "card space-y-6" do |f| %>
+    <div>
+      <%= f.label :current_password, "Aktuelles Passwort", class: "form-label" %>
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :password, "Neues Passwort (mindestens 12 Zeichen)", class: "form-label" %>
+      <%= f.password_field :password, autocomplete: "new-password", class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :password_confirmation, "Neues Passwort bestätigen", class: "form-label" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
+    </div>
+    <div class="pt-2"><%= f.submit "Passwort ändern", class: "btn-primary w-full" %></div>
+  <% end %>
+</div>

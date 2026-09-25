@@ -1,31 +1,35 @@
-<h1>Registrieren</h1>
+<div class="mx-auto max-w-md py-8">
+  <p class="eyebrow">Mitarbeiterbereich</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Registrieren</h1>
+  <div class="divider-gold"></div>
 
-<%= form_with model: @user do |f| %>
-  <% if @user.errors.any? %>
+  <%= form_with model: @user, class: "card space-y-6" do |f| %>
+    <% if @user.errors.any? %>
+      <div class="alert-error">
+        <ul class="space-y-1">
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
     <div>
-      <ul>
-        <% @user.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+      <%= f.label :name, "Name", class: "form-label" %>
+      <%= f.text_field :name, class: "form-input" %>
     </div>
+    <div>
+      <%= f.label :email_address, "E-Mail", class: "form-label" %>
+      <%= f.email_field :email_address, class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :password, "Passwort (mindestens 12 Zeichen)", class: "form-label" %>
+      <%= f.password_field :password, class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :password_confirmation, "Passwort bestätigen", class: "form-label" %>
+      <%= f.password_field :password_confirmation, class: "form-input" %>
+    </div>
+    <div class="pt-2"><%= f.submit "Registrieren", class: "btn-primary w-full" %></div>
   <% end %>
-
-  <div>
-    <%= f.label :name, "Name" %><br>
-    <%= f.text_field :name %>
-  </div>
-  <div>
-    <%= f.label :email_address, "E-Mail" %><br>
-    <%= f.email_field :email_address %>
-  </div>
-  <div>
-    <%= f.label :password, "Passwort (mindestens 12 Zeichen)" %><br>
-    <%= f.password_field :password %>
-  </div>
-  <div>
-    <%= f.label :password_confirmation, "Passwort bestätigen" %><br>
-    <%= f.password_field :password_confirmation %>
-  </div>
-  <p><%= f.submit "Registrieren" %></p>
-<% end %>
+</div>

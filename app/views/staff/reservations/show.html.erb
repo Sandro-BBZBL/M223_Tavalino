@@ -1,33 +1,45 @@
-<h1>Reservation von <%= @reservation.guest_name %></h1>
+<div class="mx-auto max-w-3xl">
+  <%= link_to "← Zurück zur Übersicht", staff_reservations_path, class: "link-muted" %>
 
-<p><%= link_to "Zurück zur Übersicht", staff_reservations_path %></p>
+  <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="eyebrow">Reservation</p>
+      <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Reservation von <%= @reservation.guest_name %></h1>
+    </div>
+    <span class="badge self-start sm:self-auto <%= @reservation.confirmed? ? "badge-gold" : "badge-muted" %>">
+      <%= @reservation.confirmed? ? "bestätigt" : "storniert" %>
+    </span>
+  </div>
+  <div class="divider-gold"></div>
 
-<ul>
-  <li>Status: <%= @reservation.confirmed? ? "bestätigt" : "storniert" %></li>
-  <li>Standort: <%= @reservation.dining_table.location.name %>, <%= @reservation.dining_table.location.address %></li>
-  <li>Tisch: <%= @reservation.dining_table.number %> (<%= @reservation.dining_table.capacity %> Plätze)</li>
-  <li>Datum: <%= @reservation.starts_at.strftime("%d.%m.%Y") %></li>
-  <li>Zeit: <%= @reservation.starts_at.strftime("%H:%M") %> bis <%= @reservation.ends_at.strftime("%H:%M") %> Uhr</li>
-  <li>Personen: <%= @reservation.party_size %></li>
-  <li>Gast: <%= @reservation.guest_name %></li>
-  <li>E-Mail: <%= @reservation.guest_email %></li>
-  <li>Telefon: <%= @reservation.guest_phone.presence || "–" %></li>
-  <li>Reservationscode: <%= @reservation.confirmation_code %></li>
-  <li>Erfasst durch: <%= @reservation.user&.name || "Gast (online)" %></li>
-  <li>Erstellt: <%= @reservation.created_at.strftime("%d.%m.%Y, %H:%M") %></li>
-  <li>Zuletzt geändert: <%= @reservation.updated_at.strftime("%d.%m.%Y, %H:%M") %></li>
-</ul>
+  <dl class="detail-list card py-2 <%= @reservation.confirmed? ? "" : "opacity-75" %>">
+    <div><dt>Status</dt><dd><%= @reservation.confirmed? ? "bestätigt" : "storniert" %></dd></div>
+    <div><dt>Standort</dt><dd><%= @reservation.dining_table.location.name %>, <%= @reservation.dining_table.location.address %></dd></div>
+    <div><dt>Tisch</dt><dd><%= @reservation.dining_table.number %> (<%= @reservation.dining_table.capacity %> Plätze)</dd></div>
+    <div><dt>Datum</dt><dd><%= @reservation.starts_at.strftime("%d.%m.%Y") %></dd></div>
+    <div><dt>Zeit</dt><dd><%= @reservation.starts_at.strftime("%H:%M") %> bis <%= @reservation.ends_at.strftime("%H:%M") %> Uhr</dd></div>
+    <div><dt>Personen</dt><dd><%= @reservation.party_size %></dd></div>
+    <div><dt>Gast</dt><dd><%= @reservation.guest_name %></dd></div>
+    <div><dt>E-Mail</dt><dd><%= @reservation.guest_email %></dd></div>
+    <div><dt>Telefon</dt><dd><%= @reservation.guest_phone.presence || "–" %></dd></div>
+    <div><dt>Reservationscode</dt><dd class="font-mono tracking-widest text-amber-400"><%= @reservation.confirmation_code %></dd></div>
+    <div><dt>Erfasst durch</dt><dd><%= @reservation.user&.name || "Gast (online)" %></dd></div>
+    <div><dt>Erstellt</dt><dd><%= @reservation.created_at.strftime("%d.%m.%Y, %H:%M") %></dd></div>
+    <div><dt>Zuletzt geändert</dt><dd><%= @reservation.updated_at.strftime("%d.%m.%Y, %H:%M") %></dd></div>
+  </dl>
 
-<% if @reservation.confirmed? %>
-  <p>
-    <% if policy(@reservation).update? %>
-      <%= link_to "Bearbeiten", edit_staff_reservation_path(@reservation) %>
+  <div class="mt-8 flex flex-wrap items-center gap-4">
+    <% if @reservation.confirmed? %>
+      <% if policy(@reservation).update? %>
+        <%= link_to "Bearbeiten", edit_staff_reservation_path(@reservation), class: "btn-primary" %>
+      <% end %>
+      <% if policy(@reservation).cancel? %>
+        <%= button_to "Reservation stornieren", staff_reservation_cancellation_path(@reservation),
+                      class: "btn-danger",
+                      form: { data: { turbo_confirm: "Reservation wirklich stornieren?" } } %>
+      <% end %>
+    <% else %>
+      <p class="text-sm font-light text-zinc-500">Stornierte Reservationen können nicht mehr bearbeitet werden.</p>
     <% end %>
-  </p>
-  <% if policy(@reservation).cancel? %>
-    <%= button_to "Reservation stornieren", staff_reservation_cancellation_path(@reservation),
-                  form: { data: { turbo_confirm: "Reservation wirklich stornieren?" } } %>
-  <% end %>
-<% else %>
-  <p>Stornierte Reservationen können nicht mehr bearbeitet werden.</p>
-<% end %>
+  </div>
+</div>

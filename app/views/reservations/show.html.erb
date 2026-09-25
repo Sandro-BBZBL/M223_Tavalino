@@ -1,30 +1,42 @@
-<% if @reservation.confirmed? %>
-  <h1>Reservation bestätigt</h1>
-  <p>Vielen Dank, <%= @reservation.guest_name %>! Dein Tisch ist reserviert.</p>
-<% else %>
-  <h1>Reservation storniert</h1>
-  <p>Diese Reservation wurde storniert. Der Tisch ist wieder frei.</p>
-<% end %>
+<div class="mx-auto max-w-2xl">
+  <% if @reservation.confirmed? %>
+    <p class="eyebrow">Bestätigung</p>
+    <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Reservation bestätigt</h1>
+    <div class="divider-gold"></div>
+    <p class="text-base font-light text-zinc-400">Vielen Dank, <span class="text-zinc-100"><%= @reservation.guest_name %></span>! Dein Tisch ist reserviert.</p>
+  <% else %>
+    <p class="eyebrow text-zinc-500">Storniert</p>
+    <h1 class="font-serif text-4xl tracking-wide text-zinc-400">Reservation storniert</h1>
+    <div class="divider-gold"></div>
+    <p class="text-base font-light text-zinc-400">Diese Reservation wurde storniert. Der Tisch ist wieder frei.</p>
+  <% end %>
 
-<p>
-  Reservationscode: <strong><%= @reservation.confirmation_code %></strong><br>
-  Mit Code und deiner E-Mail-Adresse kannst du die Reservation jederzeit wieder abrufen.
-</p>
+  <div class="card mt-10 items-center text-center <%= @reservation.confirmed? ? "table-own" : "table-taken" %>">
+    <p class="text-xs font-medium tracking-[0.3em] text-zinc-500 uppercase">Reservationscode</p>
+    <p class="mt-3 font-serif text-4xl tracking-[0.2em]"><strong class="font-medium"><%= @reservation.confirmation_code %></strong></p>
+    <p class="mt-4 max-w-md text-sm font-light text-zinc-400">
+      Mit Code und deiner E-Mail-Adresse kannst du die Reservation jederzeit wieder abrufen.
+    </p>
+  </div>
 
-<ul>
-  <li>Standort: <%= @reservation.location.name %>, <%= @reservation.location.address %></li>
-  <li>Tisch: <%= @reservation.dining_table.number %> (<%= @reservation.dining_table.capacity %> Plätze)</li>
-  <li>Datum: <%= @reservation.starts_at.strftime("%d.%m.%Y") %></li>
-  <li>Zeit: <%= @reservation.starts_at.strftime("%H:%M") %> bis <%= @reservation.ends_at.strftime("%H:%M") %> Uhr</li>
-  <li>Personen: <%= @reservation.party_size %></li>
-  <li>E-Mail: <%= @reservation.guest_email %></li>
-</ul>
+  <dl class="detail-list card mt-8 py-2">
+    <div><dt>Standort</dt><dd><%= @reservation.location.name %>, <%= @reservation.location.address %></dd></div>
+    <div><dt>Tisch</dt><dd><%= @reservation.dining_table.number %> (<%= @reservation.dining_table.capacity %> Plätze)</dd></div>
+    <div><dt>Datum</dt><dd><%= @reservation.starts_at.strftime("%d.%m.%Y") %></dd></div>
+    <div><dt>Zeit</dt><dd><%= @reservation.starts_at.strftime("%H:%M") %> bis <%= @reservation.ends_at.strftime("%H:%M") %> Uhr</dd></div>
+    <div><dt>Personen</dt><dd><%= @reservation.party_size %></dd></div>
+    <div><dt>E-Mail</dt><dd><%= @reservation.guest_email %></dd></div>
+  </dl>
 
-<% if @reservation.cancellable? %>
-  <%= button_to "Reservation stornieren", reservation_cancellation_path(@reservation),
-                form: { data: { turbo_confirm: "Reservation wirklich stornieren?" } } %>
-<% elsif @reservation.confirmed? %>
-  <p>Eine Stornierung online ist nur bis 2 Stunden vor dem Termin möglich. Bitte rufe das Restaurant an.</p>
-<% end %>
+  <div class="mt-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <%= link_to "← Zur Startseite", root_path, class: "link-muted" %>
 
-<p><%= link_to "Zur Startseite", root_path %></p>
+    <% if @reservation.cancellable? %>
+      <%= button_to "Reservation stornieren", reservation_cancellation_path(@reservation),
+                    class: "btn-danger",
+                    form: { data: { turbo_confirm: "Reservation wirklich stornieren?" } } %>
+    <% elsif @reservation.confirmed? %>
+      <p class="max-w-sm text-sm font-light text-zinc-500 sm:text-right">Eine Stornierung online ist nur bis 2 Stunden vor dem Termin möglich. Bitte rufe das Restaurant an.</p>
+    <% end %>
+  </div>
+</div>

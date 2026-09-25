@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+/* Tavolino – Fine-Dining Dark-Mode Design System */
+
+@theme {
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-zinc-950 font-sans font-light text-zinc-100 antialiased;
+  }
+
+  h1 {
+    @apply font-serif text-4xl tracking-wide text-zinc-100;
+  }
+
+  h2 {
+    @apply font-serif text-2xl tracking-wide text-zinc-100;
+  }
+
+  h3 {
+    @apply font-serif text-xl tracking-wide text-zinc-100;
+  }
+
+  a {
+    @apply transition-all duration-300;
+  }
+
+  /* Cormorant nutzt standardmässig Mediävalziffern – für Tischnummern & Daten Versalziffern */
+  .font-serif,
+  h1,
+  h2,
+  h3 {
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Datums-/Zeit-Picker im Dark Mode sichtbar machen */
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-sm border border-amber-500/50 bg-amber-600/10 px-5 py-2.5 text-sm font-medium text-amber-500 shadow-sm transition-all duration-300 hover:bg-amber-500 hover:text-zinc-950;
+  }
+
+  .btn-secondary {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-sm border border-zinc-700 bg-zinc-900 px-5 py-2.5 text-sm font-medium text-zinc-300 transition-all duration-300 hover:bg-zinc-800;
+  }
+
+  .btn-danger {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-sm border border-rose-500/40 bg-rose-500/5 px-5 py-2.5 text-sm font-medium text-rose-400 transition-all duration-300 hover:border-rose-400 hover:bg-rose-500/15;
+  }
+
+  /* Dezenter Gold-Link */
+  .link-gold {
+    @apply text-amber-500 underline-offset-4 transition-all duration-300 hover:text-amber-400 hover:underline;
+  }
+
+  .link-muted {
+    @apply text-sm text-zinc-400 transition-all duration-300 hover:text-amber-400;
+  }
+
+  /* Karten */
+  .card {
+    @apply relative flex flex-col rounded-md border border-zinc-800 bg-zinc-900 p-6 transition-all duration-300;
+  }
+
+  /* Tisch-Status */
+  .table-free {
+    @apply border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-400;
+  }
+
+  .table-taken {
+    @apply border-zinc-900 bg-zinc-950 text-zinc-600 opacity-75;
+  }
+
+  .table-own {
+    @apply border-amber-500/50 bg-zinc-800 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.1)];
+  }
+
+  /* Formulare */
+  .form-label {
+    @apply mb-2 block text-xs font-medium tracking-[0.2em] text-zinc-400 uppercase;
+  }
+
+  .form-input {
+    @apply block h-10 w-full rounded-sm border-0 bg-zinc-900 px-3 py-2 text-zinc-100 shadow-sm ring-1 ring-zinc-800 transition-colors ring-inset placeholder:text-zinc-500 focus:ring-2 focus:ring-amber-500 focus:outline-none focus:ring-inset sm:text-sm sm:leading-6;
+  }
+
+  .form-checkbox {
+    @apply size-4 cursor-pointer rounded-sm border-zinc-700 bg-zinc-900 accent-amber-500;
+  }
+
+  .form-hint {
+    @apply mt-2 text-xs text-zinc-500;
+  }
+
+  /* Hinweise & Fehler */
+  .alert-error {
+    @apply rounded-md border border-rose-500/30 bg-rose-500/5 px-5 py-4 text-sm text-rose-300;
+  }
+
+  .alert-warning {
+    @apply rounded-md border border-amber-500/30 bg-amber-500/5 px-5 py-4 text-sm text-amber-200;
+  }
+
+  /* Status-Badges */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-medium tracking-wide;
+  }
+
+  .badge-gold {
+    @apply border-amber-500/40 bg-amber-500/5 text-amber-400;
+  }
+
+  .badge-muted {
+    @apply border-zinc-800 bg-zinc-950 text-zinc-500;
+  }
+
+  .badge-emerald {
+    @apply border-emerald-500/30 bg-emerald-500/5 text-emerald-400;
+  }
+
+  /* Tabellen */
+  .table-wrap {
+    @apply overflow-x-auto rounded-md border border-zinc-800 bg-zinc-900;
+  }
+
+  .data-table {
+    @apply min-w-full divide-y divide-zinc-800 text-left text-sm;
+  }
+
+  .data-table th {
+    @apply px-5 py-4 text-xs font-medium tracking-[0.2em] whitespace-nowrap text-zinc-500 uppercase;
+  }
+
+  .data-table td {
+    @apply px-5 py-4 align-middle text-zinc-300;
+  }
+
+  .data-table tbody {
+    @apply divide-y divide-zinc-800/70;
+  }
+
+  .data-table tbody tr {
+    @apply transition-colors duration-300 hover:bg-zinc-800/40;
+  }
+
+  /* Definitionslisten (Details) */
+  .detail-list {
+    @apply divide-y divide-zinc-800 text-sm;
+  }
+
+  .detail-list > div {
+    @apply grid grid-cols-1 gap-1 py-4 sm:grid-cols-3 sm:gap-4;
+  }
+
+  .detail-list dt {
+    @apply text-xs font-medium tracking-[0.2em] text-zinc-500 uppercase sm:pt-0.5;
+  }
+
+  .detail-list dd {
+    @apply text-zinc-200 sm:col-span-2;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply text-sm tracking-wide text-zinc-400 transition-all duration-300 hover:text-amber-400;
+  }
+
+  /* Kleine Überschrift über dem Titel */
+  .eyebrow {
+    @apply mb-3 text-xs font-medium tracking-[0.3em] text-amber-500/80 uppercase;
+  }
+
+  .divider-gold {
+    @apply my-6 h-px w-16 bg-gradient-to-r from-amber-500/70 to-transparent;
+  }
+}

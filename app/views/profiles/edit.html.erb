@@ -1,30 +1,38 @@
-<h1>Profil bearbeiten</h1>
+<div class="mx-auto max-w-2xl">
+  <%= link_to "← Zurück zum Profil", profile_path, class: "link-muted" %>
 
-<% if @user.errors.any? %>
-  <ul>
-    <% @user.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
+  <p class="eyebrow mt-8">Konto</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Profil bearbeiten</h1>
+  <div class="divider-gold"></div>
+
+  <% if @user.errors.any? %>
+    <ul class="alert-error mb-8 space-y-1">
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <section class="card">
+    <h2 class="font-serif text-2xl tracking-wide text-zinc-100">Name</h2>
+    <%= form_with model: @user, url: profile_path, method: :patch, class: "mt-6 space-y-6" do |f| %>
+      <div>
+        <%= f.label :name, "Name", class: "form-label" %>
+        <%= f.text_field :name, class: "form-input" %>
+      </div>
+      <div><%= f.submit "Speichern", class: "btn-primary" %></div>
     <% end %>
-  </ul>
-<% end %>
+  </section>
 
-<h2>Name</h2>
-<%= form_with model: @user, url: profile_path, method: :patch do |f| %>
-  <div>
-    <%= f.label :name, "Name" %><br>
-    <%= f.text_field :name %>
-  </div>
-  <p><%= f.submit "Speichern" %></p>
-<% end %>
-
-<h2>E-Mail-Adresse ändern</h2>
-<p>Aktuell: <%= @user.email_address %></p>
-<%= form_with url: email_change_path do |f| %>
-  <div>
-    <%= f.label :new_email, "Neue E-Mail-Adresse" %><br>
-    <%= f.email_field :new_email %>
-  </div>
-  <p><%= f.submit "Bestätigungslink senden" %></p>
-<% end %>
-
-<p><%= link_to "Zurück zum Profil", profile_path %></p>
+  <section class="card mt-8">
+    <h2 class="font-serif text-2xl tracking-wide text-zinc-100">E-Mail-Adresse ändern</h2>
+    <p class="mt-2 text-sm font-light text-zinc-400">Aktuell: <span class="text-zinc-200"><%= @user.email_address %></span></p>
+    <%= form_with url: email_change_path, class: "mt-6 space-y-6" do |f| %>
+      <div>
+        <%= f.label :new_email, "Neue E-Mail-Adresse", class: "form-label" %>
+        <%= f.email_field :new_email, class: "form-input" %>
+      </div>
+      <div><%= f.submit "Bestätigungslink senden", class: "btn-primary" %></div>
+    <% end %>
+  </section>
+</div>

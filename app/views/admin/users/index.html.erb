@@ -1,24 +1,29 @@
-<h1>Benutzerübersicht</h1>
+<div class="mb-10">
+  <p class="eyebrow">Administration</p>
+  <h1 class="font-serif text-4xl tracking-wide text-zinc-100">Benutzerübersicht</h1>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>E-Mail</th>
-      <th>Rolle</th>
-      <th>Standorte</th>
-      <th>Aktionen</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @users.each do |user| %>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
       <tr>
-        <td><%= user.name %></td>
-        <td><%= user.email_address %></td>
-        <td><%= user.role %></td>
-        <td><%= user.locations.map(&:name).to_sentence.presence || "keine zugeordnet" %></td>
-        <td><%= link_to "Bearbeiten", edit_admin_user_path(user) %></td>
+        <th>Name</th>
+        <th>E-Mail</th>
+        <th>Rolle</th>
+        <th>Standorte</th>
+        <th>Aktionen</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td class="text-zinc-100"><%= user.name %></td>
+          <td class="text-zinc-400"><%= user.email_address %></td>
+          <td><span class="badge <%= user.role == "admin" ? "badge-gold" : "badge-muted" %>"><%= user.role %></span></td>
+          <td><%= user.locations.map(&:name).to_sentence.presence || "keine zugeordnet" %></td>
+          <td><%= link_to "Bearbeiten", edit_admin_user_path(user), class: "link-gold" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
