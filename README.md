@@ -7,7 +7,6 @@ mit mehreren Standorten die Reservationen verwalten.
 Details zur Problemstellung, den Anforderungen und den Architekturentscheiden
 (Überschneidungsprüfung, Optimistic Locking) stehen im Projektantrag unter
 [`docs/sandro_bucher_dokumentation_v2.md`](docs/sandro_bucher_dokumentation_v2.md).
-Der Nachweis der Tests steht unter [`docs/testing.md`](docs/testing.md).
 
 ## Setup
 
