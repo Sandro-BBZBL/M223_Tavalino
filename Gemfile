@@ -67,7 +67,7 @@ end
 
 gem "bcrypt", "~> 3.1"
 
-gem "json", "< 3"
+gem "json", "< 4"
 
 gem "pundit", "~> 2.5"
 
